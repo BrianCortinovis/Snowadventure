@@ -1,0 +1,14 @@
+{
+  "name": "snowadventure",
+  "version": "2.0.0",
+  "description": "Snow Adventure Foppolo - Escursioni in motoslitta",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2",
+    "formidable": "^3",
+    "nodemailer": "^8",
+    "stripe": "^20",
+    "uuid": "^13"
+  }
+}

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snow Adventure — Simulazione Piattaforma</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#c8e635;--lr:200,230,53;--dk:#060606;--dk2:#0d0d0d;--dk3:#151515;--dk4:#1a1a1a;--bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.1);--w:#fff;--g:#888;--g2:#555}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--dk);font-family:'Inter',sans-serif;color:var(--w);-webkit-font-smoothing:antialiased}
+#cvs{position:fixed;inset:0;z-index:0;pointer-events:none}
+.act{position:fixed;inset:0;bottom:56px;z-index:10;opacity:0;pointer-events:none;transition:opacity 0.7s;overflow:hidden}
+.act.on{opacity:1;pointer-events:auto}
+
+/* Controls */
+.cbar{position:fixed;bottom:0;left:0;right:0;z-index:200;height:56px;background:rgba(6,6,6,0.95);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;align-items:center;padding:0 14px;gap:8px}
+.cb{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:#ccc;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.cb:hover{background:rgba(255,255,255,0.1);color:#fff}
+.cb.on{background:rgba(var(--lr),0.15);color:var(--lime);border-color:rgba(var(--lr),0.3)}
+.pw{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;cursor:pointer;margin:0 4px}
+.pf{height:100%;background:var(--lime);border-radius:2px;transition:width 0.35s;width:0%}
+.sl{font-size:9px;color:#555;font-weight:600;min-width:36px;text-align:center;flex-shrink:0}
+.sg{display:flex;gap:3px;flex-shrink:0}
+.sb{padding:3px 7px;border-radius:3px;font-size:8px;font-weight:700;background:rgba(255,255,255,0.04);border:1px solid var(--bd);color:#555;cursor:pointer;transition:all 0.2s}
+.sb.on{background:rgba(var(--lr),0.1);color:var(--lime);border-color:rgba(var(--lr),0.2)}
+
+/* Narration bar */
+.narr{position:fixed;top:0;left:0;right:0;z-index:200;padding:10px 20px;background:rgba(6,6,6,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);text-align:center;font-size:12px;color:var(--g);transition:opacity 0.4s;min-height:38px;display:flex;align-items:center;justify-content:center;gap:8px}
+.narr strong{color:var(--lime);font-weight:700}
+.narr .act-badge{padding:2px 8px;border-radius:10px;font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+.narr .ab-pub{background:rgba(80,200,120,0.12);color:#50c878}
+.narr .ab-adm{background:rgba(255,140,0,0.12);color:#ff8c00}
+
+/* === PUBLIC SITE === */
+.ps{width:100%;height:100%;display:flex;flex-direction:column;background:var(--dk);padding-top:38px}
+.pnav{height:50px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid var(--bd);background:rgba(6,6,6,0.9);flex-shrink:0}
+.plogo{font-size:14px;font-weight:800;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 50%,var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pnl{display:flex;gap:16px;margin-left:auto;font-size:10px;font-weight:500;color:#666}
+.pnl .hl{color:#000;background:var(--lime);padding:4px 12px;border-radius:5px;font-weight:700;font-size:9px}
+.phero{position:relative;height:200px;flex-shrink:0;display:flex;align-items:center;justify-content:center;text-align:center}
+.phero::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,6,6,0.3),rgba(6,6,6,0.85) 80%,var(--dk))}
+.phbg{position:absolute;inset:0;background:linear-gradient(135deg,#1a2a0a,#0a1a2a 50%,#1a0a2a);opacity:0.5}
+.phc{position:relative;z-index:1}
+.phc h1{font-family:'Playfair Display',serif;font-size:clamp(24px,5vw,44px);font-weight:700;line-height:1}
+.phc h1 em{font-style:italic;color:var(--lime)}
+.phc p{font-size:11px;color:#777;margin-top:6px}
+.pbody{flex:1;overflow-y:auto;padding:20px}
+.esc{display:flex;gap:12px;max-width:660px;margin:0 auto;justify-content:center;flex-wrap:wrap}
+.ec{flex:1;min-width:160px;max-width:200px;border-radius:12px;border:1px solid var(--bd);background:var(--dk2);transition:all 0.3s}
+.ec.sel{border-color:var(--lime);box-shadow:0 0 20px rgba(var(--lr),0.12)}
+.ecimg{height:60px;display:flex;align-items:center;justify-content:center;font-size:26px;border-radius:12px 12px 0 0}
+.ecinfo{padding:10px}
+.ecinfo h3{font-size:12px;font-weight:700;margin-bottom:2px}
+.ecinfo .dur{font-size:9px;color:#555;margin-bottom:4px}
+.ecinfo .pr{font-size:15px;font-weight:800;color:var(--lime)}
+.ecinfo .bb{margin-top:8px;padding:6px;border-radius:5px;background:var(--lime);color:#000;font-size:9px;font-weight:700;text-align:center;text-transform:uppercase}
+
+/* Booking widget */
+.bwo{position:absolute;inset:0;top:38px;background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);z-index:30;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.4s}
+.bwo.show{opacity:1;pointer-events:auto}
+.bwm{width:88%;max-width:480px;max-height:80%;background:var(--dk3);border:1px solid var(--bd2);border-radius:14px;padding:20px;overflow-y:auto}
+.bwt{font-size:14px;font-weight:800;margin-bottom:2px}
+.bws{font-size:10px;color:#555;margin-bottom:12px}
+.bst{display:none}.bst.on{display:block}
+.bcal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:8px 0}
+.bch{font-size:7px;text-align:center;color:#444;padding:3px 0}
+.bd{height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#444;border:1px solid transparent}
+.bd.a{color:#bbb;background:rgba(255,255,255,0.03);border-color:var(--bd)}
+.bd.s{background:var(--lime);color:#000;border-color:var(--lime)}
+.bsl{display:flex;gap:5px;margin:8px 0}
+.bslot{padding:6px 12px;border-radius:5px;font-size:10px;font-weight:600;color:#777;background:rgba(255,255,255,0.03);border:1px solid var(--bd)}
+.bslot.s{background:rgba(var(--lr),0.1);color:var(--lime);border-color:rgba(var(--lr),0.3)}
+.bfr{display:flex;gap:8px;margin-bottom:8px}
+.bff{flex:1}
+.bff label{display:block;font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px}
+.bfi{width:100%;padding:7px 10px;border-radius:5px;background:var(--dk4);border:1px solid var(--bd);color:#bbb;font-size:11px;font-family:inherit}
+.bfi.f{color:#fff;border-color:rgba(var(--lr),0.2)}
+.bpay{display:flex;gap:6px;margin:10px 0}
+.bpc{flex:1;padding:10px;border-radius:7px;text-align:center;font-size:9px;font-weight:600;color:#666;background:rgba(255,255,255,0.02);border:1px solid var(--bd)}
+.bpc.s{border-color:rgba(var(--lr),0.3);color:var(--lime);background:rgba(var(--lr),0.04)}
+.bpi{font-size:16px;margin-bottom:3px}
+.bsum{background:rgba(255,255,255,0.02);border:1px solid var(--bd);border-radius:7px;padding:10px;margin:8px 0}
+.bsr{display:flex;justify-content:space-between;padding:3px 0;font-size:10px;color:#777}
+.bsr.tot{color:var(--lime);font-weight:800;font-size:13px;border-top:1px solid var(--bd);padding-top:6px;margin-top:3px}
+.bbtn{width:100%;padding:10px;border:none;border-radius:7px;background:var(--lime);color:#000;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:10px;text-transform:uppercase;letter-spacing:0.05em}
+.bconf{text-align:center;padding:16px 0}
+.bconf .ci{font-size:40px;margin-bottom:8px}
+.bconf h3{font-size:16px;font-weight:800;color:var(--lime);margin-bottom:4px}
+.bconf p{font-size:11px;color:#777;line-height:1.5}
+.bconf .rc{display:inline-block;margin-top:8px;padding:6px 16px;background:rgba(var(--lr),0.1);border:1px solid rgba(var(--lr),0.2);border-radius:7px;font-family:monospace;font-size:13px;font-weight:700;color:var(--lime)}
+
+/* Transition */
+.trs{position:fixed;inset:0;bottom:56px;z-index:100;background:var(--dk);display:flex;align-items:center;justify-content:center;text-align:center;opacity:0;pointer-events:none;transition:opacity 0.5s}
+.trs.show{opacity:1;pointer-events:auto}
+.trs h2{font-size:clamp(16px,3vw,24px);color:var(--lime);font-weight:800;letter-spacing:0.08em;text-transform:uppercase}
+.trs p{font-size:12px;color:#555;margin-top:8px}
+
+/* === ADMIN PANEL === */
+.aw{width:100%;height:100%;display:flex;background:var(--dk);padding-top:38px}
+.aside{width:190px;flex-shrink:0;background:var(--dk2);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto}
+.alogo{padding:14px 16px;font-size:14px;font-weight:800;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,#fff 50%,var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.asec{font-size:7px;letter-spacing:0.15em;text-transform:uppercase;color:#333;padding:12px 16px 4px;font-weight:600}
+.an{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:11px;color:#555;cursor:default;transition:all 0.2s;border-left:2px solid transparent}
+.an:hover{color:#888;background:rgba(255,255,255,0.01)}
+.an.on{color:var(--lime);background:rgba(var(--lr),0.04);border-left-color:var(--lime)}
+.an .ni{font-size:13px;min-width:16px;text-align:center}
+.an .bg{margin-left:auto;font-size:7px;font-weight:700;padding:1px 5px;border-radius:6px}
+.bg-red{background:rgba(255,80,80,0.15);color:#ff5050}
+.bg-lime{background:rgba(var(--lr),0.1);color:var(--lime)}
+
+.amain{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.atop{height:44px;flex-shrink:0;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid var(--bd)}
+.atop h2{font-size:14px;font-weight:700}
+.atop-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.adot{width:7px;height:7px;border-radius:50%;background:var(--lime)}
+.abody{flex:1;overflow-y:auto;padding:16px 20px}
+
+/* Admin content elements */
+.asection{display:none;animation:aIn 0.35s ease both}
+.asection.on{display:block}
+@keyframes aIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* KPI */
+.krow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.kbox{background:var(--dk2);border:1px solid var(--bd);border-radius:8px;padding:12px 6px;text-align:center}
+.kv{font-size:clamp(14px,2vw,22px);font-weight:800;color:var(--lime)}
+.kl{font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#444;margin-top:2px}
+
+/* Tables */
+.sh{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#444;font-weight:600;margin:14px 0 6px}
+table.t{width:100%;border-collapse:collapse}
+.t th{text-align:left;padding:6px 8px;font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#383838;border-bottom:1px solid var(--bd)}
+.t td{padding:7px 8px;font-size:10px;border-bottom:1px solid rgba(255,255,255,0.02);color:#999}
+.t .m{font-family:monospace;color:var(--lime);font-weight:600;font-size:9px}
+.t .n{color:#ddd;font-weight:600}
+.t .am{color:var(--lime);font-weight:700;text-align:right}
+.sbdg{padding:2px 6px;border-radius:3px;font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;display:inline-block}
+.s-pend{background:rgba(255,180,0,0.12);color:#ffb400}
+.s-conf{background:rgba(80,200,120,0.12);color:#50c878}
+.s-comp{background:rgba(80,160,255,0.12);color:#50a0ff}
+.s-canc{background:rgba(255,80,80,0.12);color:#ff5050}
+.s-act{background:rgba(80,200,120,0.12);color:#50c878}
+.s-used{background:rgba(80,160,255,0.12);color:#50a0ff}
+.alink{font-size:9px;color:var(--lime);font-weight:600;cursor:default}
+.nrow{background:rgba(var(--lr),0.03)}
+
+/* Detail panel - slides in from right */
+.detail-panel{position:absolute;top:0;right:0;width:340px;height:100%;background:var(--dk3);border-left:1px solid var(--bd2);z-index:20;transform:translateX(100%);transition:transform 0.35s ease;overflow-y:auto;padding:20px}
+.detail-panel.open{transform:translateX(0)}
+.dp-close{font-size:18px;color:#555;cursor:default;float:right}
+.dp-title{font-size:15px;font-weight:800;margin-bottom:4px;padding-right:30px}
+.dp-sub{font-size:10px;color:#555;margin-bottom:16px}
+.dp-field{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:11px}
+.dp-field .lbl{color:#555;font-size:10px}
+.dp-field .val{color:#ccc;font-weight:500}
+.dp-field .val.ac{color:var(--lime);font-weight:700}
+.dp-btn{width:100%;padding:10px;border:none;border-radius:7px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:12px;text-transform:uppercase;letter-spacing:0.05em}
+.dp-btn.primary{background:var(--lime);color:#000}
+.dp-btn.danger{background:rgba(255,80,80,0.1);color:#ff5050;border:1px solid rgba(255,80,80,0.2)}
+.dp-btn.secondary{background:rgba(255,255,255,0.05);color:#ccc;border:1px solid var(--bd)}
+.dp-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
+.dp-section-title{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#444;margin-bottom:8px;font-weight:600}
+.dp-note{margin-top:10px;padding:10px;background:rgba(var(--lr),0.04);border:1px solid rgba(var(--lr),0.1);border-radius:6px;font-size:10px;color:var(--lime);line-height:1.5}
+
+/* Toggle */
+.tg{display:inline-block;width:28px;height:15px;border-radius:8px;background:rgba(var(--lr),0.3);position:relative;vertical-align:middle}
+.tg::after{content:'';position:absolute;width:11px;height:11px;border-radius:50%;background:var(--lime);top:2px;right:2px}
+.tg.off{background:rgba(255,255,255,0.08)}.tg.off::after{background:#555;right:auto;left:2px}
+
+/* Calendar admin */
+.cg{display:grid;grid-template-columns:65px repeat(7,1fr);gap:2px}
+.cgH{font-size:7px;text-align:center;color:#444;padding:3px}
+.cgL{font-size:8px;color:#555;display:flex;align-items:center}
+.cgC{height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700}
+.co{background:rgba(var(--lr),0.08);color:var(--lime)}.cf{background:rgba(255,80,80,0.08);color:#ff5050}.cb2{background:rgba(255,255,255,0.02);color:#444}
+.cbtns{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.cbt{padding:4px 10px;border-radius:4px;font-size:8px;font-weight:600;border:1px solid var(--bd);color:#777;background:rgba(255,255,255,0.02)}
+.cbt.pr{background:rgba(var(--lr),0.08);color:var(--lime);border-color:rgba(var(--lr),0.2)}
+
+/* Exp edit */
+.eeg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.eec{background:var(--dk2);border:1px solid var(--bd);border-radius:8px;padding:12px}
+.een{font-size:12px;font-weight:700;color:var(--lime);margin-bottom:8px}
+.eef{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.02);font-size:9px}
+.eef .l{color:#444}.eef .v{color:#bbb;font-weight:500}.eef .v.ac{color:var(--lime);font-weight:700}
+
+/* Gallery */
+.gg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.gt{aspect-ratio:1;border-radius:6px;background:rgba(255,255,255,0.03);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
+.gt .go{position:absolute;top:2px;left:2px;background:rgba(0,0,0,0.5);color:var(--lime);font-size:6px;font-weight:700;padding:1px 3px;border-radius:2px}
+.gt .ge{position:absolute;top:2px;right:2px;font-size:8px}
+.gt.add{border-style:dashed;border-color:rgba(var(--lr),0.2);color:var(--lime);font-size:18px}
+
+/* Partner detail */
+.partner-flow{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.pf-step{flex:1;min-width:120px;background:rgba(255,255,255,0.03);border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:center}
+.pf-num{font-size:9px;color:var(--lime);font-weight:700;margin-bottom:4px;letter-spacing:0.1em}
+.pf-text{font-size:10px;color:#999;line-height:1.5}
+
+/* Flash animation */
+.flash{animation:fl 1.2s ease}
+@keyframes fl{0%{background:rgba(var(--lr),0.18)}100%{background:rgba(var(--lr),0.03)}}
+.flash2{animation:fl2 0.6s ease}
+@keyframes fl2{0%{box-shadow:0 0 0 3px rgba(var(--lr),0.3)}100%{box-shadow:none}}
+
+@media(max-width:768px){
+  .aside{width:42px}.alogo{font-size:9px;padding:10px 4px;text-align:center}.asec{display:none}
+  .an span:not(.ni):not(.bg){display:none}.an{justify-content:center;padding:8px 0}.an .bg{display:none}
+  .krow{grid-template-columns:repeat(3,1fr)}.eeg{grid-template-columns:1fr}.gg{grid-template-columns:repeat(4,1fr)}
+  .detail-panel{width:100%}.pnl span:not(.hl){display:none}.esc{flex-direction:column;align-items:center}
+  .sg{display:none}.cb{width:28px;height:28px;font-size:10px}.cbar{padding:0 8px;gap:4px}
+}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+
+<!-- NARRATION BAR -->
+<div class="narr" id="narr"><span class="act-badge ab-pub">Sito Pubblico</span> <span id="narr-text">Il cliente visita il sito Snow Adventure</span></div>
+
+<!-- TRANSITION -->
+<div class="trs" id="trs"><div><h2 id="trs-t"></h2><p id="trs-p"></p></div></div>
+
+<!-- ACT 1: PUBLIC -->
+<div class="act on" id="act-pub">
+  <div class="ps">
+    <div class="pnav"><div class="plogo">Snow Adventure</div><div class="pnl"><span>Home</span><span>Esperienze</span><span>Gallery</span><span>Contatti</span><span>Gift Card</span><span class="hl">Prenota</span></div></div>
+    <div class="phero"><div class="phbg"></div><div class="phc"><h1>Vivi la <em>montagna</em></h1><p>Noleggio motoslitte a Foppolo &mdash; 2.200m</p></div></div>
+    <div class="pbody">
+      <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--lime);font-weight:700;text-align:center;margin-bottom:12px">Le Nostre Esperienze</div>
+      <div class="esc" id="esc">
+        <div class="ec" id="ec-sun"><div class="ecimg" style="background:linear-gradient(135deg,#2a1a0a,#1a0a00)">&#127749;</div><div class="ecinfo"><h3>Orobic Sunset Tour</h3><div class="dur">1.5 ore &middot; Aperitivo incluso</div><div class="pr">&#8364;150</div><div class="bb">Prenota Ora</div></div></div>
+        <div class="ec" id="ec-nit"><div class="ecimg" style="background:linear-gradient(135deg,#0a0a2a,#000020)">&#127769;</div><div class="ecinfo"><h3>Night Tour Orobie</h3><div class="dur">3 ore &middot; Cena al rifugio</div><div class="pr">&#8364;170</div><div class="bb">Prenota Ora</div></div></div>
+        <div class="ec" id="ec-fr"><div class="ecimg" style="background:linear-gradient(135deg,#0a2a1a,#001a10)">&#9968;</div><div class="ecinfo"><h3>Freeride</h3><div class="dur">1.5 ore &middot; Ski pass incluso</div><div class="pr">Su richiesta</div><div class="bb">Prenota Ora</div></div></div>
+      </div>
+    </div>
+    <!-- Booking widget -->
+    <div class="bwo" id="bwo">
+      <div class="bwm">
+        <!-- Step 1 Calendar -->
+        <div class="bst on" id="bs1">
+          <div class="bwt">&#127749; Orobic Sunset Tour</div><div class="bws">Seleziona data e orario</div>
+          <div style="font-size:8px;color:#444;margin-bottom:3px">MARZO 2026</div>
+          <div class="bcal"><div class="bch">L</div><div class="bch">M</div><div class="bch">M</div><div class="bch">G</div><div class="bch">V</div><div class="bch">S</div><div class="bch">D</div><div class="bd"></div><div class="bd"></div><div class="bd"></div><div class="bd"></div><div class="bd"></div><div class="bd"></div><div class="bd">1</div><div class="bd">2</div><div class="bd">3</div><div class="bd">4</div><div class="bd">5</div><div class="bd">6</div><div class="bd">7</div><div class="bd">8</div><div class="bd">9</div><div class="bd">10</div><div class="bd">11</div><div class="bd">12</div><div class="bd a">13</div><div class="bd a s">14</div><div class="bd a">15</div><div class="bd a">16</div><div class="bd a">17</div><div class="bd a">18</div><div class="bd a">19</div><div class="bd a">20</div><div class="bd a">21</div><div class="bd a">22</div><div class="bd a">23</div><div class="bd a">24</div><div class="bd a">25</div><div class="bd a">26</div><div class="bd a">27</div><div class="bd a">28</div><div class="bd a">29</div><div class="bd a">30</div><div class="bd a">31</div></div>
+          <div style="font-size:8px;color:#444;margin:4px 0 2px">ORARIO</div>
+          <div class="bsl"><div class="bslot s">17:00 <span style="font-size:8px;color:#555">(4 disp.)</span></div><div class="bslot">17:30 <span style="font-size:8px;color:#555">(6 disp.)</span></div></div>
+          <div class="bbtn">Continua &#8594;</div>
+        </div>
+        <!-- Step 2 Form -->
+        <div class="bst" id="bs2">
+          <div class="bwt">I tuoi dati</div><div class="bws">Sunset Tour &mdash; Sab 14 Mar, 17:00</div>
+          <div class="bfr"><div class="bff"><label>Nome</label><div class="bfi f">Marco</div></div><div class="bff"><label>Cognome</label><div class="bfi f">Colombo</div></div></div>
+          <div class="bfr"><div class="bff"><label>Email</label><div class="bfi f">marco.colombo@email.it</div></div><div class="bff"><label>Telefono</label><div class="bfi f">+39 345 1234567</div></div></div>
+          <div class="bfr"><div class="bff"><label>Motoslitte</label><div class="bfi f">2</div></div><div class="bff"><label>Persone</label><div class="bfi f">3</div></div></div>
+          <div class="bff" style="margin-bottom:8px"><label>Codice Sconto / Gift Card</label><div class="bfi" style="color:#444">Inserisci codice&hellip;</div></div>
+          <div class="bff" style="margin-bottom:8px"><label>Note</label><div class="bfi" style="color:#555;font-size:10px">Una persona &egrave; minorenne</div></div>
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div style="width:12px;height:12px;border-radius:2px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:8px;color:#000">&#10003;</div><span style="font-size:9px;color:#666">Acconsento al trattamento dei dati</span></div>
+          <div class="bbtn">Continua &#8594;</div>
+        </div>
+        <!-- Step 3 Payment -->
+        <div class="bst" id="bs3">
+          <div class="bwt">Riepilogo & Pagamento</div>
+          <div class="bsum"><div class="bsr"><span>Esperienza</span><span style="color:#ccc">Sunset Tour</span></div><div class="bsr"><span>Data</span><span style="color:#ccc">Sab 14 Mar, 17:00</span></div><div class="bsr"><span>Motoslitte</span><span style="color:#ccc">2</span></div><div class="bsr"><span>Persone</span><span style="color:#ccc">3</span></div><div class="bsr"><span>Prezzo</span><span style="color:#ccc">&#8364;150 &#215; 2</span></div><div class="bsr tot"><span>Totale</span><span>&#8364;300</span></div></div>
+          <div style="font-size:8px;color:#444;margin-bottom:4px">METODO DI PAGAMENTO</div>
+          <div class="bpay"><div class="bpc s"><div class="bpi">&#128179;</div>Carta</div><div class="bpc"><div class="bpi">&#127279;</div>PayPal</div><div class="bpc"><div class="bpi">&#128241;</div>Satispay</div></div>
+          <div class="bbtn">Procedi al Pagamento &#8594;</div>
+        </div>
+        <!-- Step 4 Confirm -->
+        <div class="bst" id="bs4">
+          <div class="bconf"><div class="ci">&#10003;</div><h3>Prenotazione Confermata!</h3><p>Grazie Marco! Email inviata a<br><strong style="color:#ccc">marco.colombo@email.it</strong></p><div class="rc">SA-20260314-X8F2</div><p style="margin-top:10px;font-size:10px">Sunset Tour &mdash; Sab 14 Mar, 17:00<br>2 motoslitte &middot; 3 persone &middot; &#8364;300<br><span style="color:#444">Punto d'incontro: Baita Belfud, Foppolo</span></p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACT 2: ADMIN -->
+<div class="act" id="act-adm">
+  <div class="aw">
+    <div class="aside">
+      <div class="alogo">&#9968; Snow Admin</div>
+      <div class="asec">Principale</div>
+      <div class="an on" data-s="dash"><span class="ni">&#128200;</span><span>Dashboard</span></div>
+      <div class="an" data-s="book"><span class="ni">&#128203;</span><span>Prenotazioni</span><span class="bg bg-lime">new</span></div>
+      <div class="an" data-s="cal"><span class="ni">&#128197;</span><span>Calendario</span></div>
+      <div class="asec">Gestione</div>
+      <div class="an" data-s="exp"><span class="ni">&#127749;</span><span>Esperienze</span></div>
+      <div class="an" data-s="gc"><span class="ni">&#127873;</span><span>Gift Card</span></div>
+      <div class="an" data-s="vouch"><span class="ni">&#127915;</span><span>Voucher</span></div>
+      <div class="an" data-s="partner"><span class="ni">&#127970;</span><span>Partner</span><span class="bg bg-lime">3</span></div>
+      <div class="asec">Contenuti</div>
+      <div class="an" data-s="gal"><span class="ni">&#128247;</span><span>Gallery</span></div>
+      <div class="an" data-s="msg"><span class="ni">&#128172;</span><span>Messaggi</span><span class="bg bg-red">7</span></div>
+    </div>
+    <div class="amain" style="position:relative">
+      <div class="atop"><h2 id="apt">Dashboard</h2><div class="atop-r"><span class="adot"></span><span style="font-size:9px;color:#555">Admin</span></div></div>
+      <div class="abody" id="abody">
+
+        <!-- DASHBOARD -->
+        <div class="asection on" id="s-dash">
+          <div class="krow">
+            <div class="kbox"><div class="kv" id="kv-today">13</div><div class="kl">Booking Oggi</div></div>
+            <div class="kbox"><div class="kv">48</div><div class="kl">Prossime</div></div>
+            <div class="kbox"><div class="kv" id="kv-rev">&#8364;18.750</div><div class="kl">Revenue Totale</div></div>
+            <div class="kbox"><div class="kv">34</div><div class="kl">Gift Card Attive</div></div>
+            <div class="kbox"><div class="kv">7</div><div class="kl">Non Letti</div></div>
+          </div>
+          <div class="sh">Ultime Prenotazioni</div>
+          <table class="t"><thead><tr><th>Ref</th><th>Cliente</th><th>Esperienza</th><th>Data</th><th>Slitte</th><th style="text-align:right">Importo</th><th>Status</th></tr></thead>
+          <tbody id="dash-tbody">
+            <tr class="nrow flash"><td class="m">SA-0314-X8F2</td><td class="n">Marco Colombo</td><td>Sunset Tour</td><td>14 Mar 17:00</td><td>2</td><td class="am">&#8364;300</td><td><span class="sbdg s-pend">Pending</span></td></tr>
+            <tr><td class="m">SA-0312-K2M1</td><td class="n">Laura Bianchi</td><td>Night Tour</td><td>12 Mar 19:00</td><td>1</td><td class="am">&#8364;170</td><td><span class="sbdg s-conf">Confirmed</span></td></tr>
+            <tr><td class="m">SA-0311-P9Q4</td><td class="n">Thomas H.</td><td>Sunset Tour</td><td>11 Mar 17:00</td><td>1</td><td class="am">&#8364;150</td><td><span class="sbdg s-comp">Completed</span></td></tr>
+            <tr><td class="m">SA-0310-J7W2</td><td class="n">Sara Moretti</td><td>Night Tour</td><td>10 Mar 19:00</td><td>3</td><td class="am">&#8364;510</td><td><span class="sbdg s-conf">Confirmed</span></td></tr>
+            <tr><td class="m">SA-0309-R3F8</td><td class="n">Luca Tosi</td><td>Sunset Tour</td><td>9 Mar 17:00</td><td>4</td><td class="am">&#8364;600</td><td><span class="sbdg s-comp">Completed</span></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- BOOKINGS -->
+        <div class="asection" id="s-book">
+          <div style="display:flex;gap:5px;margin-bottom:12px" id="book-filters">
+            <span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;background:rgba(var(--lr),0.1);color:var(--lime);border:1px solid rgba(var(--lr),0.2)">Tutti</span>
+            <span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;color:#444;border:1px solid var(--bd)">Pending</span>
+            <span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;color:#444;border:1px solid var(--bd)">Confirmed</span>
+            <span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;color:#444;border:1px solid var(--bd)">Completed</span>
+            <span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;color:#444;border:1px solid var(--bd)">Cancelled</span>
+          </div>
+          <table class="t"><thead><tr><th>Ref</th><th>Cliente</th><th>Email</th><th>Esp.</th><th>Data</th><th>&#9968;</th><th>Pers.</th><th style="text-align:right">Importo</th><th>Status</th><th>Azione</th></tr></thead>
+          <tbody>
+            <tr class="nrow" id="bk-marco"><td class="m">SA-0314-X8F2</td><td class="n">Marco Colombo</td><td style="font-size:9px;color:#555">marco.colombo@email.it</td><td>Sunset</td><td>14 Mar 17:00</td><td>2</td><td>3</td><td class="am">&#8364;300</td><td><span class="sbdg s-pend" id="ms">Pending</span></td><td><span class="alink" id="ma">Dettagli &#8594;</span></td></tr>
+            <tr><td class="m">SA-0312-K2M1</td><td class="n">Laura Bianchi</td><td style="font-size:9px;color:#555">laura.b@email.it</td><td>Night</td><td>12 Mar 19:00</td><td>1</td><td>2</td><td class="am">&#8364;170</td><td><span class="sbdg s-conf">Confirmed</span></td><td><span class="alink">Dettagli &#8594;</span></td></tr>
+            <tr><td class="m">SA-0311-P9Q4</td><td class="n">Thomas H.</td><td style="font-size:9px;color:#555">thomas@mail.de</td><td>Sunset</td><td>11 Mar 17:00</td><td>1</td><td>1</td><td class="am">&#8364;150</td><td><span class="sbdg s-comp">Completed</span></td><td><span style="color:#444;font-size:9px">&#10003;</span></td></tr>
+            <tr><td class="m">SA-0310-J7W2</td><td class="n">Sara Moretti</td><td style="font-size:9px;color:#555">sara.m@email.it</td><td>Night</td><td>10 Mar 19:00</td><td>3</td><td>5</td><td class="am">&#8364;510</td><td><span class="sbdg s-conf">Confirmed</span></td><td><span class="alink">Dettagli &#8594;</span></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- BOOKING DETAIL PANEL -->
+        <div class="detail-panel" id="dp-booking">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title" style="color:var(--lime)">SA-0314-X8F2</div>
+          <div class="dp-sub">Prenotazione di Marco Colombo</div>
+          <div class="dp-field"><span class="lbl">Nome</span><span class="val">Marco Colombo</span></div>
+          <div class="dp-field"><span class="lbl">Email</span><span class="val">marco.colombo@email.it</span></div>
+          <div class="dp-field"><span class="lbl">Telefono</span><span class="val">+39 345 1234567</span></div>
+          <div class="dp-field"><span class="lbl">Esperienza</span><span class="val">Orobic Sunset Tour</span></div>
+          <div class="dp-field"><span class="lbl">Data</span><span class="val">Sabato 14 Marzo 2026, 17:00</span></div>
+          <div class="dp-field"><span class="lbl">Motoslitte</span><span class="val">2</span></div>
+          <div class="dp-field"><span class="lbl">Persone</span><span class="val">3</span></div>
+          <div class="dp-field"><span class="lbl">Importo</span><span class="val ac">&#8364;300</span></div>
+          <div class="dp-field"><span class="lbl">Sconto</span><span class="val">&#8364;0</span></div>
+          <div class="dp-field"><span class="lbl">Pagamento</span><span class="val">Stripe (Carta)</span></div>
+          <div class="dp-field"><span class="lbl">Note</span><span class="val" style="color:#888">Una persona &egrave; minorenne</span></div>
+          <div class="dp-field"><span class="lbl">Privacy</span><span class="val" style="color:#50c878">&#10003; Acconsentito</span></div>
+          <div class="dp-field"><span class="lbl">Status</span><span class="val" id="dp-status"><span class="sbdg s-pend">Pending</span></span></div>
+          <div class="dp-section">
+            <div class="dp-section-title">Cambia Status</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <div class="dp-btn primary" id="dp-confirm-btn" style="width:auto;padding:8px 16px;flex:1">&#10003; Conferma</div>
+              <div class="dp-btn danger" style="width:auto;padding:8px 16px;flex:1">&#10005; Cancella</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CALENDAR -->
+        <div class="asection" id="s-cal">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:11px;color:#666">&#9664;</span><span style="font-size:12px;font-weight:700">Marzo 2026</span><span style="font-size:11px;color:#666">&#9654;</span></div>
+            <div style="display:flex;gap:4px"><span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;background:rgba(var(--lr),0.1);color:var(--lime);border:1px solid rgba(var(--lr),0.2)">Tutti</span><span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;color:#444;border:1px solid var(--bd)">Sunset</span><span style="padding:3px 8px;border-radius:4px;font-size:8px;font-weight:600;color:#444;border:1px solid var(--bd)">Night</span></div>
+          </div>
+          <div class="cg">
+            <div></div><div class="cgH">LUN</div><div class="cgH">MAR</div><div class="cgH">MER</div><div class="cgH">GIO</div><div class="cgH">VEN</div><div class="cgH">SAB</div><div class="cgH">DOM</div>
+            <div class="cgL">Sunset 17</div><div class="cgC co">4/6</div><div class="cgC co">2/6</div><div class="cgC"></div><div class="cgC co">5/6</div><div class="cgC cf">6/6</div><div class="cgC co" id="cal-sat">4/6</div><div class="cgC co">1/6</div>
+            <div class="cgL">Night 19</div><div class="cgC"></div><div class="cgC"></div><div class="cgC co">2/6</div><div class="cgC co">4/6</div><div class="cgC co">3/6</div><div class="cgC cf">6/6</div><div class="cgC co">5/6</div>
+            <div class="cgL" style="color:#ff5050;font-size:7px">Bloccati</div><div class="cgC"></div><div class="cgC"></div><div class="cgC cb2">&#10005;</div><div class="cgC"></div><div class="cgC"></div><div class="cgC"></div><div class="cgC"></div>
+          </div>
+          <div class="cbtns">
+            <div class="cbt pr">+ Creazione Bulk</div><div class="cbt">+ Slot singolo</div><div class="cbt">Blocca giorno</div><div class="cbt">Modifica max slitte</div><div class="cbt" style="color:#ff5050;border-color:rgba(255,80,80,0.15)">Elimina slot</div>
+          </div>
+          <div style="margin-top:8px;font-size:8px;color:#383838">&#128274; Non puoi eliminare slot con booking attivi &middot; <span style="color:var(--lime)">&#9632;</span> disponibile &middot; <span style="color:#ff5050">&#9632;</span> pieno &middot; <span style="color:#444">&#9632;</span> bloccato</div>
+        </div>
+
+        <!-- CALENDAR BULK PANEL -->
+        <div class="detail-panel" id="dp-cal">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Creazione Slot in Blocco</div>
+          <div class="dp-sub">Crea slot per pi&ugrave; date e orari contemporaneamente</div>
+          <div class="dp-field"><span class="lbl">Esperienza</span><span class="val ac">Sunset Tour</span></div>
+          <div class="dp-field"><span class="lbl">Date selezionate</span><span class="val">16, 17, 18, 19, 20, 21, 22 Mar</span></div>
+          <div class="dp-field"><span class="lbl">Orari</span><span class="val">17:00, 17:30</span></div>
+          <div class="dp-field"><span class="lbl">Max slitte/slot</span><span class="val">6</span></div>
+          <div class="dp-note">Verranno creati <strong>14 slot</strong> (7 date &#215; 2 orari). Gli slot gi&agrave; esistenti vengono ignorati.</div>
+          <div class="dp-btn primary">&#10003; Crea 14 Slot</div>
+        </div>
+
+        <!-- EXPERIENCES -->
+        <div class="asection" id="s-exp">
+          <div class="eeg">
+            <div class="eec" id="ee-sun">
+              <div class="een">&#127749; Orobic Sunset Tour</div>
+              <div class="eef"><span class="l">Nome</span><span class="v">Orobic Sunset Tour</span></div>
+              <div class="eef"><span class="l">Durata</span><span class="v">1.5 ore</span></div>
+              <div class="eef"><span class="l">Prezzo</span><span class="v ac">&#8364;150</span></div>
+              <div class="eef"><span class="l">Max slitte/slot</span><span class="v">6</span></div>
+              <div class="eef"><span class="l">Descrizione</span><span class="v" style="font-size:8px;color:#555">Tour al tramonto con aperitivo&hellip;</span></div>
+              <div class="eef"><span class="l">Attiva</span><span class="tg"></span></div>
+              <div style="margin-top:8px;text-align:right"><span class="alink">Modifica &#8594;</span></div>
+            </div>
+            <div class="eec">
+              <div class="een">&#127769; Night Tour Orobie</div>
+              <div class="eef"><span class="l">Nome</span><span class="v">Night Tour Orobie</span></div>
+              <div class="eef"><span class="l">Durata</span><span class="v">3 ore</span></div>
+              <div class="eef"><span class="l">Prezzo</span><span class="v ac">&#8364;170</span></div>
+              <div class="eef"><span class="l">Max slitte/slot</span><span class="v">6</span></div>
+              <div class="eef"><span class="l">Descrizione</span><span class="v" style="font-size:8px;color:#555">Escursione notturna con cena&hellip;</span></div>
+              <div class="eef"><span class="l">Attiva</span><span class="tg"></span></div>
+              <div style="margin-top:8px;text-align:right"><span class="alink">Modifica &#8594;</span></div>
+            </div>
+            <div class="eec" style="border-style:dashed;border-color:rgba(var(--lr),0.15);display:flex;align-items:center;justify-content:center;min-height:100px"><div style="text-align:center;color:var(--lime)"><div style="font-size:24px">+</div><div style="font-size:9px;font-weight:600;margin-top:3px">Nuova esperienza</div></div></div>
+          </div>
+        </div>
+
+        <!-- EXP EDIT PANEL -->
+        <div class="detail-panel" id="dp-exp">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Modifica Esperienza</div>
+          <div class="dp-sub">&#127749; Orobic Sunset Tour</div>
+          <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Nome</label><div class="bfi f">Orobic Sunset Tour</div></div>
+          <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Durata</label><div class="bfi f">1.5 ore</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Prezzo (&#8364;)</label><div class="bfi f" id="exp-price">150</div></div></div>
+          <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Max Slitte/Slot</label><div class="bfi f">6</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Attiva</label><div style="padding-top:6px"><span class="tg"></span></div></div></div>
+          <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Descrizione</label><div class="bfi f" style="min-height:50px;font-size:10px">Tour al tramonto sulle Orobie a 2.200m con aperitivo panoramico incluso</div></div>
+          <div class="dp-note">Modificando il prezzo, le prenotazioni gi&agrave; confermate non vengono aggiornate.</div>
+          <div class="dp-btn primary">&#10003; Salva Modifiche</div>
+          <div class="dp-btn secondary">Disattiva Esperienza</div>
+        </div>
+
+        <!-- GIFT CARDS -->
+        <div class="asection" id="s-gc">
+          <table class="t"><thead><tr><th>Codice</th><th>Importo</th><th>Acquirente</th><th>Destinatario</th><th>Email Dest.</th><th>Scadenza</th><th>Status</th><th>Azione</th></tr></thead>
+          <tbody>
+            <tr><td class="m">SA-GC-A8X2F1QP</td><td style="font-weight:700;color:#ddd">&#8364;150</td><td>Mario Rossi</td><td>Laura Bianchi</td><td style="font-size:9px;color:#555">laura@email.it</td><td style="color:#555">14 Mar 27</td><td><span class="sbdg s-act">Active</span></td><td><span class="alink">Dettagli &#8594;</span></td></tr>
+            <tr><td class="m">SA-GC-K3M9N2PL</td><td style="font-weight:700;color:#ddd">&#8364;170</td><td>Anna Santi</td><td>Paolo Mori</td><td style="font-size:9px;color:#555">paolo@email.it</td><td style="color:#555">10 Feb 27</td><td><span class="sbdg s-used">Used</span></td><td><span style="color:#444;font-size:9px">&#8212;</span></td></tr>
+            <tr><td class="m">SA-GC-R7T4W8YZ</td><td style="font-weight:700;color:#ddd">&#8364;100</td><td>Giulia Ferrari</td><td>Marco C.</td><td style="font-size:9px;color:#555">marco@email.it</td><td style="color:#555">5 Gen 27</td><td><span class="sbdg s-act">Active</span></td><td><span class="alink">Dettagli &#8594;</span></td></tr>
+            <tr><td class="m">SA-GC-W5N1L4DP</td><td style="font-weight:700;color:#ddd">&#8364;300</td><td>Hotel Cristallo</td><td>VIP Guest</td><td style="font-size:9px;color:#555">vip@cristallo.it</td><td style="color:#555">20 Apr 27</td><td><span class="sbdg s-act">Active</span></td><td><span class="alink">Dettagli &#8594;</span></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- GC DETAIL -->
+        <div class="detail-panel" id="dp-gc">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title" style="color:var(--lime)">SA-GC-A8X2F1QP</div>
+          <div class="dp-sub">Gift Card &#8364;150</div>
+          <div class="dp-field"><span class="lbl">Importo</span><span class="val ac">&#8364;150</span></div>
+          <div class="dp-field"><span class="lbl">Acquirente</span><span class="val">Mario Rossi</span></div>
+          <div class="dp-field"><span class="lbl">Email Acq.</span><span class="val">mario.r@email.it</span></div>
+          <div class="dp-field"><span class="lbl">Destinatario</span><span class="val">Laura Bianchi</span></div>
+          <div class="dp-field"><span class="lbl">Email Dest.</span><span class="val">laura@email.it</span></div>
+          <div class="dp-field"><span class="lbl">Messaggio</span><span class="val" style="color:#888">Buon compleanno Laura!</span></div>
+          <div class="dp-field"><span class="lbl">Esperienza</span><span class="val">Generica (qualsiasi)</span></div>
+          <div class="dp-field"><span class="lbl">Creata</span><span class="val">14 Mar 2026</span></div>
+          <div class="dp-field"><span class="lbl">Scadenza</span><span class="val">14 Mar 2027</span></div>
+          <div class="dp-field"><span class="lbl">Status</span><span class="val"><span class="sbdg s-act">Active</span></span></div>
+          <div class="dp-section"><div class="dp-section-title">Cambia Status</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <div class="dp-btn secondary" style="width:auto;flex:1;padding:8px 12px;font-size:10px">Used</div>
+              <div class="dp-btn secondary" style="width:auto;flex:1;padding:8px 12px;font-size:10px">Expired</div>
+              <div class="dp-btn danger" style="width:auto;flex:1;padding:8px 12px;font-size:10px">Cancelled</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VOUCHERS -->
+        <div class="asection" id="s-vouch">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-size:11px;color:#666">Codici sconto per partner e promozioni</div>
+            <div class="cbt pr" style="font-size:9px">+ Crea Voucher</div>
+          </div>
+          <table class="t"><thead><tr><th>Codice</th><th>Sconto</th><th>Descrizione</th><th>Usi</th><th>Scadenza</th><th>Attivo</th><th>Azione</th></tr></thead>
+          <tbody>
+            <tr id="v-hotel"><td class="m">SA-V-HOTEL10</td><td style="color:var(--lime);font-weight:700">-10%</td><td>Hotel Villa Carona</td><td>14/50</td><td style="color:#555">30 Apr 26</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+            <tr><td class="m">SA-V-CRISTALLO15</td><td style="color:var(--lime);font-weight:700">-15%</td><td>Hotel Cristallo</td><td>7/30</td><td style="color:#555">30 Apr 26</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+            <tr><td class="m">SA-V-PROMO30</td><td style="color:var(--lime);font-weight:700">-&#8364;30</td><td>Promo lancio Night</td><td>8/20</td><td style="color:#555">31 Mar 26</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+            <tr><td class="m">SA-V-VIP100</td><td style="color:var(--lime);font-weight:700">-&#8364;100</td><td>VIP uso singolo</td><td>0/1</td><td style="color:#555">&mdash;</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+            <tr style="opacity:0.4"><td class="m">SA-V-XMAS25</td><td style="color:#555">-25%</td><td>Promo Natale (scaduto)</td><td>43/50</td><td style="color:#555">6 Gen 26</td><td style="color:#ff5050">&#9679; No</td><td><span style="color:#444;font-size:9px">&#8212;</span></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- VOUCHER DETAIL (Hotel Partner) -->
+        <div class="detail-panel" id="dp-vouch">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title" style="color:var(--lime)">SA-V-HOTEL10</div>
+          <div class="dp-sub">Convenzione Hotel Villa Carona</div>
+          <div class="dp-field"><span class="lbl">Tipo sconto</span><span class="val ac">Percentuale</span></div>
+          <div class="dp-field"><span class="lbl">Valore</span><span class="val ac">10%</span></div>
+          <div class="dp-field"><span class="lbl">Descrizione</span><span class="val">Hotel Villa Carona &mdash; convenzione ospiti</span></div>
+          <div class="dp-field"><span class="lbl">Max utilizzi</span><span class="val">50</span></div>
+          <div class="dp-field"><span class="lbl">Utilizzi attuali</span><span class="val ac">14</span></div>
+          <div class="dp-field"><span class="lbl">Scadenza</span><span class="val">30 Aprile 2026</span></div>
+          <div class="dp-field"><span class="lbl">Attivo</span><span class="val"><span class="tg"></span></span></div>
+          <div class="dp-section">
+            <div class="dp-section-title">Flusso Partner</div>
+            <div class="partner-flow">
+              <div class="pf-step"><div class="pf-num">1. CREI IL CODICE</div><div class="pf-text">Imposti sconto, max usi e scadenza fine stagione</div></div>
+              <div class="pf-step"><div class="pf-num">2. L'HOTEL DISTRIBUISCE</div><div class="pf-text">Gli ospiti ricevono il codice alla reception</div></div>
+              <div class="pf-step"><div class="pf-num">3. IL CLIENTE PRENOTA</div><div class="pf-text">Inserisce il codice nel form e lo sconto si applica</div></div>
+            </div>
+          </div>
+          <div class="dp-section">
+            <div class="dp-section-title">Modifica</div>
+            <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Max Usi</label><div class="bfi f">50</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Scadenza</label><div class="bfi f">2026-04-30</div></div></div>
+            <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Descrizione</label><div class="bfi f">Hotel Villa Carona &mdash; convenzione ospiti</div></div>
+            <div class="dp-btn primary">&#10003; Salva</div>
+            <div class="dp-btn secondary">Disattiva Voucher</div>
+            <div class="dp-btn danger">Elimina Voucher</div>
+          </div>
+        </div>
+
+        <!-- CREATE VOUCHER PANEL -->
+        <div class="detail-panel" id="dp-newvouch">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Crea Nuovo Voucher</div>
+          <div class="dp-sub">Codice sconto per hotel partner o promozione</div>
+          <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Tipo Sconto</label><div style="display:flex;gap:5px"><span style="padding:5px 12px;border-radius:4px;font-size:9px;font-weight:600;background:rgba(var(--lr),0.1);color:var(--lime);border:1px solid rgba(var(--lr),0.2)">Percentuale %</span><span style="padding:5px 12px;border-radius:4px;font-size:9px;font-weight:600;color:#444;border:1px solid var(--bd)">Importo Fisso &#8364;</span></div></div></div>
+          <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Valore Sconto</label><div class="bfi f">15</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Max Utilizzi</label><div class="bfi f">30</div></div></div>
+          <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Descrizione</label><div class="bfi f">Hotel Cristallo &mdash; convenzione inverno 2026</div></div>
+          <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Scadenza</label><div class="bfi f">2026-04-30</div></div>
+          <div class="dp-note">Il codice viene generato automaticamente. L'hotel lo distribuisce ai propri ospiti.</div>
+          <div class="dp-btn primary">&#10003; Crea Voucher</div>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="asection" id="s-gal">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-size:11px;color:#666">Trascina per riordinare &middot; &#128065; visibilit&agrave;</div>
+            <div class="cbt pr" style="font-size:9px">+ Upload foto</div>
+          </div>
+          <div class="gg">
+            <div class="gt"><span class="go">#1</span><span class="ge">&#128065;</span>&#127956;</div>
+            <div class="gt"><span class="go">#2</span><span class="ge">&#128065;</span>&#127769;</div>
+            <div class="gt"><span class="go">#3</span><span class="ge" style="opacity:0.3">&#128065;</span>&#9968;</div>
+            <div class="gt"><span class="go">#4</span><span class="ge">&#128065;</span>&#127748;</div>
+            <div class="gt"><span class="go">#5</span><span class="ge">&#128065;</span>&#127747;</div>
+            <div class="gt add">+</div>
+          </div>
+          <div style="margin-top:10px;font-size:8px;color:#383838">Alt text per SEO &middot; Upload illimitato &middot; JPG, PNG, WebP</div>
+        </div>
+
+        <!-- GALLERY DETAIL -->
+        <div class="detail-panel" id="dp-gal">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Dettaglio Foto #1</div>
+          <div style="width:100%;aspect-ratio:16/10;background:rgba(255,255,255,0.03);border:1px solid var(--bd);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:12px">&#127956;</div>
+          <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Alt Text (SEO)</label><div class="bfi f">Motoslitta al tramonto sulle Orobie a Foppolo</div></div>
+          <div class="dp-field"><span class="lbl">Ordine</span><span class="val ac">#1</span></div>
+          <div class="dp-field"><span class="lbl">Visibile</span><span class="val"><span class="tg"></span></span></div>
+          <div class="dp-btn primary">&#10003; Salva</div>
+          <div class="dp-btn danger">Elimina Foto</div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="asection" id="s-msg">
+          <table class="t"><thead><tr><th>Nome</th><th>Email</th><th>Telefono</th><th>Messaggio</th><th>Data</th><th>Stato</th><th>Azione</th></tr></thead>
+          <tbody>
+            <tr style="background:rgba(255,80,80,0.02)"><td class="n">Maria Russo</td><td style="font-size:9px;color:#555">maria.r@email.it</td><td style="font-size:9px;color:#555">+39 333 111 2222</td><td style="font-size:9px;color:#999;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Vorrei info per un gruppo di 8&hellip;</td><td style="font-size:9px;color:#444">12 Mar</td><td><span class="sbdg s-pend">Non letto</span></td><td><span class="alink">Leggi &#8594;</span></td></tr>
+            <tr style="background:rgba(255,80,80,0.02)"><td class="n">Hotel Cristallo</td><td style="font-size:9px;color:#555">info@cristallo.it</td><td style="font-size:9px;color:#555">+39 0345 99888</td><td style="font-size:9px;color:#999;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Interessati a convenzione per ospiti&hellip;</td><td style="font-size:9px;color:#444">11 Mar</td><td><span class="sbdg s-pend">Non letto</span></td><td><span class="alink">Leggi &#8594;</span></td></tr>
+            <tr><td class="n" style="color:#777">Paolo Morandi</td><td style="font-size:9px;color:#444">paolo@email.it</td><td style="font-size:9px;color:#444">+39 345 333 4444</td><td style="font-size:9px;color:#666;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Confermo la data, grazie</td><td style="font-size:9px;color:#444">10 Mar</td><td style="font-size:8px;color:#444">Letto</td><td style="font-size:9px;color:#444">&#8212;</td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- MSG DETAIL -->
+        <div class="detail-panel" id="dp-msg">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Messaggio da Hotel Cristallo</div>
+          <div class="dp-sub">Ricevuto l'11 Marzo 2026</div>
+          <div class="dp-field"><span class="lbl">Nome</span><span class="val">Hotel Cristallo</span></div>
+          <div class="dp-field"><span class="lbl">Email</span><span class="val">info@cristallo.it</span></div>
+          <div class="dp-field"><span class="lbl">Telefono</span><span class="val">+39 0345 99888</span></div>
+          <div class="dp-section"><div class="dp-section-title">Messaggio</div>
+            <div style="font-size:11px;color:#ccc;line-height:1.7;padding:10px;background:rgba(255,255,255,0.02);border-radius:6px">Buongiorno, siamo l'Hotel Cristallo di Foppolo. Saremmo interessati a una convenzione per i nostri ospiti. Potremmo offrire un codice sconto del 15% da distribuire alla reception. Contattateci per discutere i dettagli. Grazie!</div>
+          </div>
+          <div class="dp-btn primary">&#10003; Segna come Letto</div>
+          <div class="dp-note">Dopo aver letto: puoi creare un voucher partner direttamente dalla sezione Partner!</div>
+        </div>
+
+        <!-- PARTNER -->
+        <div class="asection" id="s-partner">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div style="font-size:11px;color:#666">Gestione strutture convenzionate &middot; Codici sconto dedicati</div>
+            <div class="cbt pr" style="font-size:9px">+ Nuovo Partner</div>
+          </div>
+          <table class="t"><thead><tr><th>Struttura</th><th>Codice</th><th>Sconto</th><th>Usi</th><th>Scadenza</th><th>Attivo</th><th>Azione</th></tr></thead>
+          <tbody>
+            <tr><td class="n">Hotel Villa Carona</td><td class="m">SA-V-HOTEL10</td><td style="color:var(--lime);font-weight:700">-10%</td><td>14/50</td><td style="color:#555">30 Apr 26</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+            <tr><td class="n">Hotel Cristallo</td><td class="m">SA-V-CRISTALLO15</td><td style="color:var(--lime);font-weight:700">-15%</td><td>7/30</td><td style="color:#555">30 Apr 26</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+            <tr><td class="n">B&amp;B Montagna Viva</td><td class="m">SA-V-MONTAGN20</td><td style="color:var(--lime);font-weight:700">-20%</td><td>3/20</td><td style="color:#555">30 Apr 26</td><td style="color:#50c878">&#9679; S&igrave;</td><td><span class="alink">Gestisci &#8594;</span></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- PARTNER DETAIL -->
+        <div class="detail-panel" id="dp-partner">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Hotel Villa Carona</div>
+          <div class="dp-sub">Partner attivo dal 1 Dicembre 2025</div>
+          <div class="dp-section"><div class="dp-section-title">Informazioni Partner</div>
+            <div class="dp-field"><span class="lbl">Struttura</span><span class="val">Hotel Villa Carona</span></div>
+            <div class="dp-field"><span class="lbl">Referente</span><span class="val">Giuseppe Carona</span></div>
+            <div class="dp-field"><span class="lbl">Email</span><span class="val">info@villacarona.it</span></div>
+            <div class="dp-field"><span class="lbl">Telefono</span><span class="val">+39 0345 88777</span></div>
+          </div>
+          <div class="dp-section"><div class="dp-section-title">Impostazioni Voucher</div>
+            <div class="dp-field"><span class="lbl">Codice</span><span class="val ac">SA-V-HOTEL10</span></div>
+            <div class="dp-field"><span class="lbl">Tipo sconto</span><span class="val ac">Percentuale</span></div>
+            <div class="dp-field"><span class="lbl">Valore sconto</span><span class="val ac">10%</span></div>
+            <div class="dp-field"><span class="lbl">Max utilizzi</span><span class="val">50</span></div>
+            <div class="dp-field"><span class="lbl">Utilizzi attuali</span><span class="val ac">14</span></div>
+            <div class="dp-field"><span class="lbl">Scadenza</span><span class="val">30 Aprile 2026</span></div>
+            <div class="dp-field"><span class="lbl">Attivo</span><span class="val"><span class="tg"></span></span></div>
+          </div>
+          <div class="dp-section"><div class="dp-section-title">Flusso Partner</div>
+            <div class="partner-flow">
+              <div class="pf-step"><div class="pf-num">1. CREI IL CODICE</div><div class="pf-text">Imposti sconto %, max usi e scadenza stagione</div></div>
+              <div class="pf-step"><div class="pf-num">2. L'HOTEL DISTRIBUISCE</div><div class="pf-text">Gli ospiti ricevono il codice alla reception</div></div>
+              <div class="pf-step"><div class="pf-num">3. IL CLIENTE PRENOTA</div><div class="pf-text">Inserisce il codice e lo sconto si applica automaticamente</div></div>
+            </div>
+          </div>
+          <div class="dp-section"><div class="dp-section-title">Modifica Impostazioni</div>
+            <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Sconto %</label><div class="bfi f">10</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Max Usi</label><div class="bfi f">50</div></div></div>
+            <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Scadenza</label><div class="bfi f">2026-04-30</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Descrizione</label><div class="bfi f">Hotel Villa Carona &mdash; convenzione ospiti</div></div></div>
+            <div class="dp-btn primary">&#10003; Salva Modifiche</div>
+            <div class="dp-btn secondary">Disattiva Partner</div>
+            <div class="dp-btn danger">Elimina Partner</div>
+          </div>
+        </div>
+
+        <!-- NEW PARTNER PANEL -->
+        <div class="detail-panel" id="dp-newpartner">
+          <div class="dp-close">&#10005;</div>
+          <div class="dp-title">Nuovo Partner</div>
+          <div class="dp-sub">Crea convenzione per una nuova struttura</div>
+          <div class="dp-section"><div class="dp-section-title">Dati Struttura</div>
+            <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Nome Struttura</label><div class="bfi f">Rifugio Baita Alta</div></div>
+            <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Referente</label><div class="bfi f">Marco Bergamini</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Email</label><div class="bfi f">info@baitaalta.it</div></div></div>
+            <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Telefono</label><div class="bfi f">+39 0345 77666</div></div>
+          </div>
+          <div class="dp-section"><div class="dp-section-title">Impostazioni Sconto</div>
+            <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Tipo Sconto</label><div style="display:flex;gap:5px"><span style="padding:5px 12px;border-radius:4px;font-size:9px;font-weight:600;background:rgba(var(--lr),0.1);color:var(--lime);border:1px solid rgba(var(--lr),0.2)">Percentuale %</span><span style="padding:5px 12px;border-radius:4px;font-size:9px;font-weight:600;color:#444;border:1px solid var(--bd)">Importo Fisso &#8364;</span></div></div></div>
+            <div class="bfr"><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Valore Sconto</label><div class="bfi f">15</div></div><div class="bff"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Max Utilizzi</label><div class="bfi f">30</div></div></div>
+            <div class="bff" style="margin-bottom:8px"><label style="font-size:8px;color:#444;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px">Scadenza</label><div class="bfi f">2026-04-30</div></div>
+          </div>
+          <div class="dp-note">Il codice voucher viene generato automaticamente e potr&agrave; essere distribuito dalla struttura ai propri ospiti.</div>
+          <div class="dp-btn primary">&#10003; Crea Partner</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="cbar">
+  <button class="cb" id="b-first">&#9198;</button>
+  <button class="cb" id="b-prev">&#9664;</button>
+  <button class="cb on" id="b-play">&#9654;</button>
+  <button class="cb" id="b-next">&#9654;</button>
+  <button class="cb" id="b-last">&#9197;</button>
+  <div class="pw" id="pw"><div class="pf" id="pf"></div></div>
+  <div class="sl" id="slbl">1/?</div>
+  <div class="sg">
+    <button class="sb" data-sp="0.5">0.5x</button>
+    <button class="sb on" data-sp="1">1x</button>
+    <button class="sb" data-sp="2">2x</button>
+  </div>
+</div>
+
+<script>
+// Particles
+(function(){const c=document.getElementById('cvs'),x=c.getContext('2d');let W,H;const M=innerWidth<768,N=M?12:25;function r(){W=c.width=innerWidth;H=c.height=innerHeight}r();addEventListener('resize',r);const p=[];class P{constructor(){this.r()}r(){this.x=Math.random()*W;this.y=H+Math.random()*50;this.s=Math.random()*1.5+0.3;this.vy=-(Math.random()*0.3+0.1);this.vx=(Math.random()-0.5)*0.12;this.o=Math.random()*0.18+0.03;this.a=Math.random()>0.7}u(){this.y+=this.vy;this.x+=this.vx+Math.sin(this.y*0.004)*0.1;if(this.y<-10)this.r()}d(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=this.a?`rgba(200,230,53,${this.o})`:`rgba(255,255,255,${this.o})`;x.fill()}}for(let i=0;i<N;i++){const q=new P;q.y=Math.random()*H;p.push(q)}(function l(){x.clearRect(0,0,W,H);p.forEach(q=>{q.u();q.d()});requestAnimationFrame(l)})()})();
+
+// Timeline steps
+const S=[
+  // PUBLIC
+  {n:'Il cliente visita il sito Snow Adventure',b:'pub',fn:()=>{showAct('pub');closeBw();deselect();closeAllPanels();}},
+  {n:'Sceglie il <strong>Sunset Tour</strong> &mdash; 1.5 ore, &#8364;150',b:'pub',fn:()=>{selExp('ec-sun');}},
+  {n:'Si apre il <strong>widget di prenotazione</strong> &mdash; sceglie data e orario',b:'pub',fn:()=>{openBw();showBs(1);}},
+  {n:'Compila i <strong>dati personali</strong>: nome, email, motoslitte, persone, note',b:'pub',fn:()=>{showBs(2);}},
+  {n:'<strong>Riepilogo</strong> e scelta del metodo di pagamento (Carta, PayPal, Satispay)',b:'pub',fn:()=>{showBs(3);}},
+  {n:'<strong>Prenotazione confermata!</strong> Codice SA-20260314-X8F2, email inviata',b:'pub',fn:()=>{showBs(4);}},
+  // TRANSITION
+  {n:'',b:'trans',fn:()=>{showTrans('Pannello Admin','La prenotazione di Marco appare in tempo reale nella dashboard');}},
+  // ADMIN - DASHBOARD
+  {n:'<strong>Dashboard</strong>: 5 KPI in tempo reale + ultime prenotazioni',b:'adm',fn:()=>{showAct('adm');showSec('dash');closeAllPanels();}},
+  // BOOKINGS
+  {n:'<strong>Prenotazioni</strong>: lista completa filtrabile per stato ed esperienza',b:'adm',fn:()=>{showSec('book');closeAllPanels();}},
+  {n:'<strong>Apri dettaglio</strong> prenotazione di Marco: tutti i campi visibili',b:'adm',fn:()=>{openPanel('dp-booking');}},
+  {n:'<strong>Conferma la prenotazione</strong>: status da Pending a Confirmed',b:'adm',fn:()=>{confirmMarco();}},
+  // CALENDAR
+  {n:'<strong>Calendario</strong>: tutti gli slot con disponibilit&agrave; in tempo reale',b:'adm',fn:()=>{showSec('cal');closeAllPanels();}},
+  {n:'<strong>Creazione Bulk</strong>: 7 date &#215; 2 orari = 14 slot in un click',b:'adm',fn:()=>{openPanel('dp-cal');}},
+  // EXPERIENCES
+  {n:'<strong>Esperienze</strong>: card con tutti i campi modificabili',b:'adm',fn:()=>{showSec('exp');closeAllPanels();}},
+  {n:'<strong>Modifica esperienza</strong>: nome, prezzo, durata, max slitte, descrizione, attiva/disattiva',b:'adm',fn:()=>{openPanel('dp-exp');}},
+  // GIFT CARDS
+  {n:'<strong>Gift Card</strong>: lista con codice, importo, acquirente, destinatario, scadenza',b:'adm',fn:()=>{showSec('gc');closeAllPanels();}},
+  {n:'<strong>Dettaglio Gift Card</strong>: tutti i dati + cambio status (Active/Used/Expired/Cancelled)',b:'adm',fn:()=>{openPanel('dp-gc');}},
+  // VOUCHERS
+  {n:'<strong>Voucher & Partner</strong>: lista codici sconto con usi, scadenza, stato',b:'adm',fn:()=>{showSec('vouch');closeAllPanels();}},
+  {n:'<strong>Gestisci voucher partner</strong>: dettaglio Hotel Villa Carona con flusso completo',b:'adm',fn:()=>{openPanel('dp-vouch');}},
+  {n:'<strong>Crea nuovo voucher</strong>: tipo sconto, valore, max usi, scadenza, descrizione',b:'adm',fn:()=>{openPanel('dp-newvouch');}},
+  // PARTNER
+  {n:'<strong>Partner</strong>: gestione strutture convenzionate con statistiche e KPI',b:'adm',fn:()=>{showSec('partner');closeAllPanels();}},
+  {n:'<strong>Dettaglio partner</strong>: Hotel Villa Carona &mdash; sconto, usi, scadenza, flusso completo',b:'adm',fn:()=>{openPanel('dp-partner');}},
+  {n:'<strong>Nuovo partner</strong>: crea convenzione per Rifugio Baita Alta con sconto personalizzato',b:'adm',fn:()=>{openPanel('dp-newpartner');}},
+  // GALLERY
+  {n:'<strong>Gallery</strong>: upload, riordina drag &amp; drop, visibilit&agrave; on/off',b:'adm',fn:()=>{showSec('gal');closeAllPanels();}},
+  {n:'<strong>Dettaglio foto</strong>: alt text SEO, ordine, visibilit&agrave;, elimina',b:'adm',fn:()=>{openPanel('dp-gal');}},
+  // MESSAGES
+  {n:'<strong>Messaggi</strong>: lista con stato letto/non letto e dettagli completi',b:'adm',fn:()=>{showSec('msg');closeAllPanels();}},
+  {n:'<strong>Leggi messaggio</strong> Hotel Cristallo: richiesta convenzione partner &rarr; crea voucher!',b:'adm',fn:()=>{openPanel('dp-msg');}},
+];
+
+const T=S.length;let cur=-1,playing=false,spd=1,tmr=null,raf=null,ss=0;const bt=3200;
+
+function go(i){if(i<0||i>=T)return;cur=i;S[i].fn();setNarr(S[i].n,S[i].b);updUI();if(playing)stTmr();}
+function nx(){if(cur<T-1)go(cur+1);else pa();}
+function pv(){if(cur>0)go(cur-1);}
+function pl(){playing=true;$('b-play').innerHTML='&#9646;&#9646;';$('b-play').classList.add('on');stTmr();}
+function pa(){playing=false;clearTimeout(tmr);cancelAnimationFrame(raf);$('b-play').innerHTML='&#9654;';$('b-play').classList.remove('on');}
+function tg(){playing?pa():pl();}
+function stTmr(){clearTimeout(tmr);cancelAnimationFrame(raf);const d=bt/spd;ss=performance.now();aProg(d);tmr=setTimeout(nx,d);}
+function aProg(d){const f=$('pf');const tick=()=>{const e=performance.now()-ss;const b=(cur/T)*100;const s=Math.min(e/d,1)*(100/T);f.style.width=(b+s)+'%';if(e<d&&playing)raf=requestAnimationFrame(tick);};raf=requestAnimationFrame(tick);}
+function updUI(){$('slbl').textContent=(cur+1)+'/'+T;if(!playing)$('pf').style.width=((cur+1)/T*100)+'%';}
+function setSp(s){spd=s;document.querySelectorAll('.sb').forEach(b=>b.classList.toggle('on',parseFloat(b.dataset.sp)===s));if(playing)stTmr();}
+function $(id){return document.getElementById(id);}
+
+// Scene helpers
+function setNarr(html,badge){
+  const n=$('narr');const badgeHtml=badge==='pub'?'<span class="act-badge ab-pub">Sito Pubblico</span>':badge==='adm'?'<span class="act-badge ab-adm">Pannello Admin</span>':'';
+  n.innerHTML=badgeHtml+' <span>'+html+'</span>';
+}
+function showAct(a){document.querySelectorAll('.act').forEach(e=>e.classList.remove('on'));$('trs').classList.remove('show');if(a==='pub')$('act-pub').classList.add('on');if(a==='adm')$('act-adm').classList.add('on');}
+function showTrans(t,p){document.querySelectorAll('.act').forEach(e=>e.classList.remove('on'));$('trs').classList.add('show');$('trs-t').textContent=t;$('trs-p').textContent=p||'';}
+function selExp(id){document.querySelectorAll('.ec').forEach(c=>c.classList.remove('sel'));const e=$(id);if(e)e.classList.add('sel');closeBw();}
+function deselect(){document.querySelectorAll('.ec').forEach(c=>c.classList.remove('sel'));}
+function openBw(){$('bwo').classList.add('show');}
+function closeBw(){$('bwo').classList.remove('show');}
+function showBs(n){openBw();document.querySelectorAll('.bst').forEach(s=>s.classList.remove('on'));const e=$('bs'+n);if(e)e.classList.add('on');}
+function showSec(name){
+  document.querySelectorAll('.an').forEach(n=>n.classList.remove('on'));
+  const nav=document.querySelector(`.an[data-s="${name}"]`);if(nav)nav.classList.add('on');
+  const titles={dash:'Dashboard',book:'Prenotazioni',cal:'Calendario',exp:'Esperienze',gc:'Gift Card',vouch:'Voucher',partner:'Partner',gal:'Gallery',msg:'Messaggi'};
+  $('apt').textContent=titles[name]||name;
+  document.querySelectorAll('.asection').forEach(s=>s.classList.remove('on'));
+  const sec=$('s-'+name);if(sec){sec.classList.add('on');sec.style.animation='none';sec.offsetHeight;sec.style.animation='';}
+}
+function closeAllPanels(){document.querySelectorAll('.detail-panel').forEach(p=>p.classList.remove('open'));}
+function openPanel(id){closeAllPanels();const p=$(id);if(p)p.classList.add('open');}
+function confirmMarco(){
+  const s=$('ms');const a=$('ma');
+  if(s){s.className='sbdg s-conf';s.textContent='Confirmed';}
+  if(a){a.textContent='✓ Done';a.style.color='#50c878';}
+  const dp=$('dp-status');if(dp)dp.innerHTML='<span class="sbdg s-conf">Confirmed</span>';
+  const row=$('bk-marco');if(row){row.style.animation='none';row.offsetHeight;row.style.animation='fl 1.5s ease';}
+}
+
+// Init
+$('b-play').addEventListener('click',tg);
+$('b-next').addEventListener('click',()=>{pa();nx();});
+$('b-prev').addEventListener('click',()=>{pa();pv();});
+$('b-first').addEventListener('click',()=>{pa();go(0);});
+$('b-last').addEventListener('click',()=>{pa();go(T-1);});
+document.querySelectorAll('.sb').forEach(b=>b.addEventListener('click',()=>setSp(parseFloat(b.dataset.sp))));
+$('pw').addEventListener('click',e=>{const r=e.currentTarget.getBoundingClientRect();const p=(e.clientX-r.left)/r.width;pa();go(Math.max(0,Math.min(Math.floor(p*T),T-1)));});
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();tg();}else if(e.code==='ArrowRight'){pa();nx();}else if(e.code==='ArrowLeft'){pa();pv();}else if(e.key==='1')setSp(0.5);else if(e.key==='2')setSp(1);else if(e.key==='3')setSp(2);});
+go(0);
+</script>
+</body>
+</html>

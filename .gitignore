@@ -1,0 +1,12 @@
+node_modules/
+.env
+.vercel/
+database/
+uploads/
+*.log
+scraped/
+scrape.js
+preview_*.png
+*.db*
+.DS_Store
+.claude/

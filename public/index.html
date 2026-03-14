@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snow Adventure Foppolo | Escursioni in Motoslitta</title>
+<meta name="description" content="Escursioni guidate in motoslitta nelle Alpi Orobie Bergamasche. Sunset Tour, Night Tour, Freeride.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--lime:#c8e635;--bg:#060606;--white:#fff}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#000}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+.nav.scrolled{background:rgba(6,6,6,.92);backdrop-filter:blur(24px);padding:14px 48px}
+.nav-logo img{height:56px;width:auto}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:15px;letter-spacing:.15em;text-transform:uppercase;color:#fff;transition:color .3s;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.nav-links a:hover{color:var(--lime)}
+.btn-lime{padding:12px 26px;background:var(--lime);color:#000;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all .3s;display:inline-block}
+.btn-lime:hover{background:#fff}
+.btn-outline{padding:16px 34px;border:1px solid rgba(255,255,255,.15);color:#fff;font-size:18px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:all .3s;display:inline-block}
+.btn-outline:hover{background:#fff;color:#000;border-color:#fff}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101}
+.burger span{display:block;width:28px;height:2px;background:#fff}
+.mobile-menu{display:none;position:fixed;inset:0;background:var(--bg);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:24px;letter-spacing:.15em;text-transform:uppercase;color:#ccc}
+.mobile-menu a:hover{color:var(--lime)}
+@media(max-width:960px){.nav-links{display:none}.burger{display:flex}.nav{padding:16px 24px}.nav.scrolled{padding:12px 24px}}
+
+/* HERO */
+.hero{position:relative;height:100dvh;width:100%}
+.hero video,.hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,6,6,.35) 0%,rgba(6,6,6,.1) 30%,rgba(6,6,6,.95) 85%,var(--bg) 100%)}
+.hero-inner{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px}
+.hero-tag{font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--lime);margin-bottom:24px}
+.hero-title{font-size:clamp(52px,11vw,160px);font-weight:800;line-height:.85;letter-spacing:-.04em}
+.hero-sub{margin-top:24px;font-size:20px;color:rgba(255,255,255,.95);max-width:520px;line-height:1.7;font-weight:300}
+.hero-btns{margin-top:36px;display:flex;gap:12px}
+
+/* MARQUEE STRIP */
+.marquee{overflow:hidden;padding:48px 0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.marquee-track{display:flex;gap:64px;animation:scroll 20s linear infinite;white-space:nowrap}
+.marquee-track span{font-size:16px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:600}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* INTRO SPLIT */
+.intro{padding:140px 48px;display:grid;grid-template-columns:1fr 1fr;gap:80px;max-width:1400px;margin:0 auto;align-items:end}
+.intro-left .tag{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime);margin-bottom:20px;display:block}
+.intro-left h2{font-size:clamp(32px,4.5vw,60px);font-weight:300;line-height:1.15}
+.intro-left h2 em{font-family:'Playfair Display',serif;font-style:italic;color:var(--lime);font-weight:400}
+.intro-right{font-size:20px;color:#ccc;line-height:1.9;font-weight:300}
+@media(max-width:768px){.intro{grid-template-columns:1fr;gap:32px;padding:80px 24px}}
+
+/* EXPERIENCES GRID */
+.exp-grid{padding:0 48px 120px;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.exp-card{position:relative;overflow:hidden;display:block}
+.exp-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s ease}
+.exp-card:hover img{transform:scale(1.04)}
+.exp-card.tall{grid-row:span 2}
+.exp-card .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.05) 60%);transition:background .5s}
+.exp-card:hover .overlay{background:linear-gradient(to top,rgba(0,0,0,.6) 0%,rgba(0,0,0,0) 60%)}
+.exp-info{position:absolute;bottom:0;left:0;right:0;padding:32px;z-index:2}
+.exp-info .tag{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:6px;display:block}
+.exp-info h3{font-size:clamp(24px,3vw,40px);font-weight:700;line-height:1}
+.exp-info p{margin-top:6px;font-size:17px;color:#e0e0e0;max-width:400px;line-height:1.6}
+.exp-info .arrow{margin-top:12px;display:inline-flex;align-items:center;gap:6px;color:var(--lime);font-size:13px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;transition:gap .4s}
+.exp-card:hover .arrow{gap:14px}
+@media(max-width:768px){.exp-grid{grid-template-columns:1fr;padding:0 24px 80px}.exp-card.tall{grid-row:span 1}}
+
+/* STATS BAR */
+.stats{padding:80px 48px;display:flex;justify-content:center;gap:80px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:clamp(36px,5vw,64px);font-weight:800;color:var(--lime);line-height:1}
+.stat-label{margin-top:8px;font-size:14px;letter-spacing:.25em;text-transform:uppercase;color:#aaa}
+@media(max-width:600px){.stats{gap:40px;padding:60px 24px}}
+
+/* ABOUT */
+.about{padding:80px 48px 140px;max-width:1100px;margin:0 auto}
+.about h2{font-size:clamp(28px,3.5vw,44px);font-weight:300;line-height:1.35;text-align:center;max-width:700px;margin:0 auto}
+.about-cols{margin-top:60px;display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.about-cols p{font-size:19px;color:#ccc;line-height:1.9}
+.about-cols p+p{margin-top:16px}
+@media(max-width:768px){.about{padding:60px 24px 100px}.about-cols{grid-template-columns:1fr;gap:28px}}
+
+/* HORIZONTAL SCROLLER */
+.hscroll{padding:0 0 120px}
+.hscroll-title{padding:0 48px 32px;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime)}
+.hscroll-track{display:flex;gap:16px;overflow-x:auto;padding:0 48px;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none}
+.hscroll-track::-webkit-scrollbar{display:none}
+.hscroll-item{flex:0 0 auto;width:380px;position:relative;overflow:hidden;scroll-snap-align:start}
+.hscroll-item img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;transition:transform .8s ease}
+.hscroll-item:hover img{transform:scale(1.04)}
+.hscroll-item .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 50%);pointer-events:none}
+.hscroll-item .info{position:absolute;bottom:24px;left:24px;z-index:2}
+.hscroll-item h4{font-size:20px;font-weight:600}
+.hscroll-item p{font-size:17px;color:#ccc;margin-top:4px}
+@media(max-width:768px){.hscroll-item{width:280px}.hscroll-track{padding:0 24px}.hscroll-title{padding:0 24px 24px}}
+
+/* PROMO */
+.promo{padding:120px 48px;text-align:center;position:relative;overflow:hidden}
+.promo::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(200,230,53,.04) 0%,transparent 70%)}
+.promo .tag{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime);position:relative}
+.promo h2{margin-top:16px;font-size:clamp(44px,7vw,88px);font-weight:800;position:relative}
+.promo .sub{margin-top:8px;font-size:21px;color:#ccc;position:relative}
+.promo-btns{margin-top:40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
+.promo-link{margin-top:24px;display:inline-block;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);position:relative}
+.promo-link:hover{text-decoration:underline}
+@media(max-width:768px){.promo{padding:80px 24px}}
+
+/* CTA */
+.cta{position:relative;height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.cta img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cta-over{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.cta-inner{position:relative;z-index:2;padding:24px}
+.cta h2{font-size:clamp(40px,7vw,96px);font-weight:800;line-height:.92}
+.cta .btn-lime{margin-top:32px;padding:18px 44px;font-size:15px}
+
+/* FOOTER */
+footer{padding:80px 48px 40px;border-top:1px solid rgba(255,255,255,.04)}
+.ft-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px}
+footer .tag{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:16px;display:block}
+footer p,footer a{font-size:17px;color:#aaa;line-height:1.9}
+footer a:hover{color:#fff}
+.ft-logo{height:36px;width:auto;margin-bottom:16px;display:block}
+.ft-socials{display:flex;gap:14px;margin-top:16px}
+.ft-socials a{color:#bbb;transition:color .3s}
+.ft-socials a:hover{color:var(--lime)}
+.ft-socials svg{width:16px;height:16px}
+.ft-bottom{max-width:1400px;margin:48px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.03);text-align:center;font-size:13px;color:rgba(255,255,255,.15)}
+@media(max-width:768px){footer{padding:60px 24px 32px}.ft-grid{grid-template-columns:1fr;gap:32px}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo"><img src="images/homepage_img_0.png" alt="Snow Adventure"></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="esperienze.html">Esperienze</a>
+    <a href="sunset.html">Sunset</a>
+    <a href="night.html">Night</a>
+    <a href="freeride.html">Freeride</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contatti.html">Contatti</a>
+    <a href="gift-card.html">Gift Card</a>
+    <a href="#" class="btn-lime" style="margin-left:8px" onclick="event.preventDefault();BWOpen()">Prenota</a>
+  </div>
+  <div class="burger" onclick="document.getElementById('mob').classList.toggle('open')"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mob">
+  <a href="index.html" onclick="closeMob()">Home</a>
+  <a href="esperienze.html" onclick="closeMob()">Esperienze</a>
+  <a href="sunset.html" onclick="closeMob()">Sunset</a>
+  <a href="night.html" onclick="closeMob()">Night</a>
+  <a href="freeride.html" onclick="closeMob()">Freeride</a>
+  <a href="gallery.html" onclick="closeMob()">Gallery</a>
+  <a href="contatti.html" onclick="closeMob()">Contatti</a>
+  <a href="gift-card.html" onclick="closeMob()">Gift Card</a>
+  <a href="#" class="btn-lime" onclick="event.preventDefault();closeMob();BWOpen()">Prenota Ora</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <img src="images/homepage_img_8.jpeg" alt="">
+  <video autoplay muted loop playsinline poster="images/homepage_img_8.jpeg">
+    <source src="videos/homepage_hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-grad"></div>
+  <div class="hero-inner">
+    <p class="hero-tag">Foppolo — Alpi Orobie</p>
+    <h1 class="hero-title">Snow<br>Adventure</h1>
+    <p class="hero-sub">Escursioni guidate in motoslitta tra le vette innevate</p>
+    <div class="hero-btns">
+      <a href="#experiences" class="btn-lime">Esperienze</a>
+      <a href="#" class="btn-outline" onclick="event.preventDefault();BWOpen()">Prenota</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Sunset Tour</span><span>·</span><span>Night Tour</span><span>·</span><span>Freeride</span><span>·</span><span>2.200m Altitudine</span><span>·</span><span>Alpi Orobie</span><span>·</span><span>Foppolo</span><span>·</span><span>Motoslitta</span><span>·</span>
+    <span>Sunset Tour</span><span>·</span><span>Night Tour</span><span>·</span><span>Freeride</span><span>·</span><span>2.200m Altitudine</span><span>·</span><span>Alpi Orobie</span><span>·</span><span>Foppolo</span><span>·</span><span>Motoslitta</span><span>·</span>
+  </div>
+</div>
+
+<!-- INTRO SPLIT -->
+<section class="intro">
+  <div class="intro-left">
+    <span class="tag">Snow Adventure Foppolo</span>
+    <h2>Vivi l'emozione di un'avventura invernale <em>indimenticabile</em></h2>
+  </div>
+  <div class="intro-right">
+    A solo poco più di un'ora da Milano e dalla Brianza, ti aspettano le nostre escursioni guidate in motoslitta attraverso gli incantevoli paesaggi delle Alpi Orobie Bergamasche.
+  </div>
+</section>
+
+<!-- EXPERIENCES GRID -->
+<section id="experiences" class="exp-grid">
+  <!-- Sunset — tall left -->
+  <a href="sunset.html" class="exp-card tall">
+    <img src="images/homepage_img_8.jpeg" alt="Sunset Tour">
+    <div class="overlay"></div>
+    <div class="exp-info">
+      <span class="tag">1.5 ore — 150€</span>
+      <h3>Sunset Tour</h3>
+      <p>Escursione al tramonto fino a 2.200m con aperitivo in quota.</p>
+      <span class="arrow">Scopri →</span>
+    </div>
+  </a>
+  <!-- Night — top right -->
+  <a href="night.html" class="exp-card">
+    <img src="images/homepage_img_9.jpeg" alt="Night Tour" style="aspect-ratio:4/3">
+    <div class="overlay"></div>
+    <div class="exp-info">
+      <span class="tag">3 ore — 170€</span>
+      <h3>Night Tour</h3>
+      <p>Avventura notturna con cena tipica in rifugio.</p>
+      <span class="arrow">Scopri →</span>
+    </div>
+  </a>
+  <!-- Freeride — bottom right -->
+  <a href="freeride.html" class="exp-card">
+    <img src="images/homepage_img_12.jpeg" alt="Freeride" style="aspect-ratio:4/3">
+    <div class="overlay"></div>
+    <div class="exp-info">
+      <span class="tag">1.5 ore — Su richiesta</span>
+      <h3>Freeride</h3>
+      <p>Shuttle privato per freeride in Val Carisole.</p>
+      <span class="arrow">Scopri →</span>
+    </div>
+  </a>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">2.200m</div>
+    <div class="stat-label">Altitudine</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Esperienze</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1h</div>
+    <div class="stat-label">Da Milano</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about">
+  <h2>Accompagnato da istruttori esperti, esplora luoghi incontaminati e vette spettacolari fino a 2.200 metri</h2>
+  <div class="about-cols">
+    <div>
+      <p>Seguirai percorsi esclusivi accessibili solo in motoslitta. Tra salite e discese, boschi innevati e ruscelli ghiacciati, vivrai un'avventura straordinaria sotto l'attenta guida del nostro staff qualificato.</p>
+    </div>
+    <div>
+      <p>I nostri percorsi, preparati con cura, ti immergeranno in scenari da sogno, offrendoti la possibilità di respirare l'aria pura della montagna. Potrai esplorare la bellezza della natura innevata grazie ai nostri itinerari personalizzati.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIZI HORIZONTAL SCROLL -->
+<section class="hscroll">
+  <p class="hscroll-title">I nostri servizi</p>
+  <div class="hscroll-track">
+    <a href="sunset.html" class="hscroll-item">
+      <img src="images/slitta-1_img_6.jpg" alt="Sunset Tour">
+      <div class="overlay"></div>
+      <div class="info"><h4>Sunset Tour</h4><p>Aperitivo al tramonto a 2.200m</p></div>
+    </a>
+    <a href="night.html" class="hscroll-item">
+      <img src="images/slitta-2_img_6.jpg" alt="Night Tour">
+      <div class="overlay"></div>
+      <div class="info"><h4>Night Tour</h4><p>Cena tipica in rifugio</p></div>
+    </a>
+    <a href="freeride.html" class="hscroll-item">
+      <img src="images/slitta-3_img_6.jpeg" alt="Freeride">
+      <div class="overlay"></div>
+      <div class="info"><h4>Freeride Shuttle</h4><p>Neve incontaminata in Val Carisole</p></div>
+    </a>
+    <div class="hscroll-item">
+      <img src="images/homepage_img_11.jpeg" alt="Trasporto Rifugi">
+      <div class="overlay"></div>
+      <div class="info"><h4>Trasporto Rifugi</h4><p>Collegamento diretto ai rifugi</p></div>
+    </div>
+    <div class="hscroll-item">
+      <img src="images/homepage_img_10.jpg" alt="Eventi">
+      <div class="overlay"></div>
+      <div class="info"><h4>Eventi Speciali</h4><p>Team building, compleanni, feste</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROMO HOTEL -->
+<section class="promo">
+  <p class="tag">Hotel convenzionati</p>
+  <h2>-10%</h2>
+  <p class="sub">Prenotando un'escursione</p>
+  <div class="promo-btns">
+    <a href="https://hotelvillacarona.com/" target="_blank" class="btn-outline">Villa Carona Hotel &amp; Spa</a>
+    <a href="https://www.hoteladler-foppolo.it/" target="_blank" class="btn-outline">Hotel Adler Foppolo</a>
+  </div>
+  <a href="contatti.html" class="promo-link">Contattaci per il tuo voucher →</a>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <img src="images/homepage_img_13.jpg" alt="">
+  <div class="cta-over"></div>
+  <div class="cta-inner">
+    <h2>Pronto per<br>l'avventura?</h2>
+    <a href="#" class="btn-lime" onclick="event.preventDefault();BWOpen()">Prenota Ora</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-grid">
+    <div>
+      <img src="images/homepage_img_0.png" alt="Snow Adventure" class="ft-logo">
+      <p>Escursioni guidate in motoslitta nelle Alpi Orobie Bergamasche.</p>
+      <div class="ft-socials">
+        <a href="https://wa.me/393397133695" target="_blank" aria-label="WhatsApp"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+        <a href="https://www.instagram.com/snowadventure_foppolo/" target="_blank" aria-label="Instagram"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <span class="tag">Esperienze</span>
+      <a href="sunset.html" style="display:block">Orobic Sunset Tour</a>
+      <a href="night.html" style="display:block">Night Tour Adventure</a>
+      <a href="freeride.html" style="display:block">Private Freeride Ski Shuttle</a>
+      <a href="gift-card.html" style="display:block">Gift Card</a>
+      <a href="gallery.html" style="display:block">Gallery</a>
+    </div>
+    <div>
+      <span class="tag">Contatti</span>
+      <p>Baita Belfud<br>SP2, 24010 Foppolo BG</p>
+      <a href="tel:+393397133695" style="display:block">Luca: +39 339 7133695</a>
+      <a href="mailto:Info@snowadventure.it" style="display:block">Info@snowadventure.it</a>
+    </div>
+  </div>
+  <div class="ft-bottom">&copy; 2025 Snow Adventure Foppolo. Powered by Metatour. | <a href="/legal/privacy.html" style="color:inherit">Privacy</a> · <a href="/legal/terms.html" style="color:inherit">Termini</a> · <a href="/legal/cookies.html" style="color:inherit">Cookie</a></div>
+</footer>
+
+<script>
+function closeMob(){document.getElementById('mob').classList.remove('open')}
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
+</script>
+<script src="/js/cms-adapter.js"></script>
+<script src="/js/booking-widget.js"></script>
+<script src="/js/cookie-consent.js"></script>
+</body>
+</html>

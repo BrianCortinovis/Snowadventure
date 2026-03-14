@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gift Card | Snow Adventure Foppolo</title>
+<meta name="description" content="Regala un'esperienza indimenticabile in motoslitta tra le Alpi Orobie con la Gift Card di Snow Adventure Foppolo.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--lime:#c8e635;--dark:#050505}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#000}
+a{color:inherit;text-decoration:none}
+img,video{display:block;width:100%;height:100%;object-fit:cover}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+.nav.scrolled{background:rgba(0,0,0,.85);backdrop-filter:blur(20px);padding:14px 48px}
+.nav-logo img{height:56px;width:auto}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-cta{font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:12px 26px;background:var(--lime);color:#000;font-weight:600;transition:background .3s}
+.nav-cta:hover{background:#fff}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101}
+.nav-burger span{display:block;width:28px;height:2px;background:#fff;transition:all .3s}
+
+/* MOBILE */
+.mobile-menu{display:none;position:fixed;inset:0;background:#000;z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:24px;letter-spacing:.15em;text-transform:uppercase;color:#ccc}
+.mobile-menu a:hover{color:var(--lime)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .nav{padding:20px 24px}
+  .nav.scrolled{padding:16px 24px}
+}
+
+/* BUTTONS */
+.btn-primary{padding:16px 36px;background:var(--lime);color:#000;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:background .3s;display:inline-block}
+.btn-primary:hover{background:#fff}
+.btn-ghost{padding:16px 36px;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:15px;letter-spacing:.1em;text-transform:uppercase;transition:all .3s;display:inline-block}
+.btn-ghost:hover{background:#fff;color:#000;border-color:#fff}
+
+/* HERO */
+.page-hero{padding-top:140px;padding-bottom:80px;padding-left:40px;padding-right:40px;max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hero-tag{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--lime);margin-bottom:20px}
+.hero-title{font-size:clamp(52px,8vw,108px);font-weight:700;line-height:.88;letter-spacing:-.03em}
+.hero-desc{margin-top:24px;font-size:20px;color:#ccc;max-width:520px;line-height:1.75}
+.hero-note{margin-top:20px;font-size:15px;color:#aaa;letter-spacing:.05em}
+
+/* GIFT CARD VISUAL */
+.gift-card-visual{background:rgba(255,255,255,.03);padding:48px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+.gift-card-visual img{height:52px;width:auto;margin-bottom:8px}
+.gift-card-visual .gc-brand{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.gift-card-visual .gc-sub{font-size:14px;letter-spacing:.3em;text-transform:uppercase;color:#ccc}
+.gift-card-visual .gc-divider{width:40px;height:1px;background:rgba(255,255,255,.08);margin:8px 0}
+.gift-card-visual .gc-price{font-size:48px;font-weight:700;color:var(--lime);letter-spacing:-.03em}
+.gift-card-visual .gc-price-label{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#aaa}
+
+@media(max-width:900px){
+  .page-hero{grid-template-columns:1fr;gap:48px;padding:140px 24px 60px}
+  .hero-title{font-size:clamp(48px,14vw,90px)}
+}
+
+/* OPTIONS SECTION */
+.options-section{padding:100px 40px;max-width:1200px;margin:0 auto}
+.options-label{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.options-title{font-size:clamp(28px,4vw,48px);font-weight:300;line-height:1.3;margin-bottom:60px}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.option-block{padding:48px 40px;background:rgba(255,255,255,.025);transition:background .4s}
+.option-block:hover{background:rgba(255,255,255,.04)}
+.option-tag{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.option-name{font-size:clamp(28px,3.5vw,40px);font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.option-duration{font-size:18px;color:#aaa;margin-bottom:12px;letter-spacing:.05em}
+.option-include{font-size:19px;color:#aaa;margin-bottom:32px;line-height:1.6}
+.option-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:auto}
+.option-price{font-size:48px;font-weight:700;letter-spacing:-.03em;color:#fff}
+.option-price span{font-size:20px;font-weight:300;color:#ccc}
+
+@media(max-width:768px){
+  .options-section{padding:80px 24px}
+  .options-grid{grid-template-columns:1fr}
+  .option-block{padding:36px 28px}
+}
+
+/* HOW IT WORKS */
+.how-section{padding:100px 40px;max-width:1200px;margin:0 auto}
+.how-label{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.how-title{font-size:clamp(28px,4vw,48px);font-weight:300;line-height:1.3;margin-bottom:60px}
+.how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+.how-step{}
+.how-step-num{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--lime);color:#000;font-size:16px;font-weight:700;margin-bottom:24px}
+.how-step-title{font-size:22px;font-weight:600;margin-bottom:12px}
+.how-step-desc{font-size:19px;color:#ccc;line-height:1.75}
+
+@media(max-width:768px){
+  .how-section{padding:80px 24px}
+  .how-steps{grid-template-columns:1fr;gap:36px}
+}
+
+/* FOOTER */
+.footer{padding:80px 40px 40px;border-top:1px solid rgba(255,255,255,.04)}
+.footer-grid{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px}
+.footer .label{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.footer p,.footer a{font-size:17px;color:#aaa;line-height:1.8}
+.footer a:hover{color:#fff}
+.footer-logo{height:40px;width:auto;margin-bottom:16px}
+.footer-bottom{max-width:1440px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.04);text-align:center;font-size:14px;color:#aaa}
+.footer-socials{display:flex;gap:16px;margin-top:12px}
+.footer-socials a{color:#aaa;transition:color .3s}
+.footer-socials a:hover{color:var(--lime)}
+.footer-socials svg{width:18px;height:18px}
+@media(max-width:768px){
+  .footer{padding:60px 24px 32px}
+  .footer-grid{grid-template-columns:1fr;gap:36px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo"><img src="images/homepage_img_0.png" alt="Snow Adventure"></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="esperienze.html">Esperienze</a>
+    <a href="sunset.html">Sunset</a>
+    <a href="night.html">Night</a>
+    <a href="freeride.html">Freeride</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contatti.html">Contatti</a>
+    <a href="gift-card.html" class="active">Gift Card</a>
+    <a href="#" class="nav-cta" onclick="event.preventDefault();BWOpen()">Prenota</a>
+  </div>
+  <div class="nav-burger" onclick="document.getElementById('mobile').classList.toggle('open');this.classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile">
+  <a href="index.html" onclick="closeMobile()">Home</a>
+  <a href="esperienze.html" onclick="closeMobile()">Esperienze</a>
+  <a href="sunset.html" onclick="closeMobile()">Sunset</a>
+  <a href="night.html" onclick="closeMobile()">Night</a>
+  <a href="freeride.html" onclick="closeMobile()">Freeride</a>
+  <a href="gallery.html" onclick="closeMobile()">Gallery</a>
+  <a href="contatti.html" onclick="closeMobile()">Contatti</a>
+  <a href="gift-card.html" onclick="closeMobile()">Gift Card</a>
+  <a href="#" class="btn-primary" onclick="event.preventDefault();closeMobile();BWOpen()">Prenota Ora</a>
+</div>
+
+<!-- HERO -->
+<section>
+  <div class="page-hero">
+    <div>
+      <p class="hero-tag">Il regalo perfetto</p>
+      <h1 class="hero-title">Gift<br>Card</h1>
+      <p class="hero-desc">Regala a chi ami l'emozione di un'avventura indimenticabile tra le montagne innevate.</p>
+      <p class="hero-note">Il buono regalo scade 12 mesi dopo l'acquisto.</p>
+    </div>
+    <div class="gift-card-visual">
+      <img src="images/homepage_img_0.png" alt="Snow Adventure Logo">
+      <p class="gc-brand">Snow Adventure</p>
+      <p class="gc-sub">Foppolo &mdash; Alpi Orobie</p>
+      <div class="gc-divider"></div>
+      <p class="gc-price">da 150€</p>
+      <p class="gc-price-label">Buono Regalo</p>
+    </div>
+  </div>
+</section>
+
+<!-- OPTIONS -->
+<section>
+  <div class="options-section">
+    <p class="options-label">Esperienze</p>
+    <h2 class="options-title">Scegli la tua esperienza</h2>
+    <div class="options-grid">
+
+      <div class="option-block">
+        <p class="option-tag">1.5 ore</p>
+        <h3 class="option-name">Sunset Tour</h3>
+        <p class="option-duration">Per 2 persone &mdash; Include Aperitivo in quota</p>
+        <p class="option-include">Un tramonto indimenticabile a 2.200m sulle Alpi Orobie, con aperitivo in quota incluso. Il regalo ideale per una serata magica.</p>
+        <div class="option-footer">
+          <p class="option-price">150<span>€</span></p>
+          <a href="#" class="btn-primary" onclick="event.preventDefault();BWOpen('sunset')">Acquista</a>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <p class="option-tag">3 ore</p>
+        <h3 class="option-name">Night Tour</h3>
+        <p class="option-duration">Per 2 persone &mdash; Cena esclusa da pagare al rifugio</p>
+        <p class="option-include">Un'avventura notturna in motoslitta sotto le stelle, con cena tipica in rifugio. Un'esperienza unica che nessuno dimenticherà.</p>
+        <div class="option-footer">
+          <p class="option-price">170<span>€</span></p>
+          <a href="#" class="btn-primary" onclick="event.preventDefault();BWOpen('night')">Acquista</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="how-section">
+    <p class="how-label">Semplice e veloce</p>
+    <h2 class="how-title">Come funziona</h2>
+    <div class="how-steps">
+
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <h3 class="how-step-title">Scegli</h3>
+        <p class="how-step-desc">Seleziona l'esperienza che vuoi regalare tra il Sunset Tour e il Night Tour.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <h3 class="how-step-title">Contattaci</h3>
+        <p class="how-step-desc">Scrivici per completare l'acquisto e ricevere la gift card pronta da consegnare.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <h3 class="how-step-title">Regala</h3>
+        <p class="how-step-desc">Sorprendi chi ami con un'avventura sulla neve tra le vette delle Alpi Orobie.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <img src="images/homepage_img_0.png" alt="Snow Adventure" class="footer-logo">
+      <p>Escursioni guidate in motoslitta nelle Alpi Orobie Bergamasche.</p>
+    </div>
+    <div>
+      <p class="label">Esperienze</p>
+      <a href="sunset.html" style="display:block">Orobic Sunset Tour</a>
+      <a href="night.html" style="display:block">Night Tour Adventure</a>
+      <a href="freeride.html" style="display:block">Private Freeride Ski Shuttle</a>
+      <a href="gift-card.html" style="display:block">Gift Card</a>
+      <a href="gallery.html" style="display:block">Gallery</a>
+    </div>
+    <div>
+      <p class="label">Contatti</p>
+      <p>Baita Belfud<br>SP2, 24010 Foppolo BG</p>
+      <a href="tel:+393397133695" style="display:block">Luca: +39 339 7133695</a>
+      <a href="mailto:Info@snowadventure.it" style="display:block">Info@snowadventure.it</a>
+      <div class="footer-socials">
+        <a href="https://wa.me/393397133695" target="_blank" aria-label="WhatsApp"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+        <a href="https://www.instagram.com/snowadventure_foppolo/" target="_blank" aria-label="Instagram"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2025 Snow Adventure Foppolo. Powered by Metatour. | <a href="/legal/privacy.html" style="color:inherit">Privacy</a> · <a href="/legal/terms.html" style="color:inherit">Termini</a> · <a href="/legal/cookies.html" style="color:inherit">Cookie</a></div>
+</footer>
+
+<script>
+function closeMobile(){document.getElementById('mobile').classList.remove('open')}
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
+</script>
+<script src="/js/cms-adapter.js"></script>
+<script src="/js/booking-widget.js"></script>
+<script src="/js/giftcard-checkout.js"></script>
+<script src="/js/cookie-consent.js"></script>
+</body>
+</html>

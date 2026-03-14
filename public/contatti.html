@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contatti | Snow Adventure Foppolo</title>
+<meta name="description" content="Contattaci per prenotare un'escursione in motoslitta o ricevere informazioni su Snow Adventure Foppolo.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--lime:#c8e635;--dark:#050505}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#000}
+a{color:inherit;text-decoration:none}
+img,video{display:block;width:100%;height:100%;object-fit:cover}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+.nav.scrolled{background:rgba(0,0,0,.85);backdrop-filter:blur(20px);padding:14px 48px}
+.nav-logo img{height:56px;width:auto}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-cta{font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:12px 26px;background:var(--lime);color:#000;font-weight:600;transition:background .3s}
+.nav-cta:hover{background:#fff}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101}
+.nav-burger span{display:block;width:28px;height:2px;background:#fff;transition:all .3s}
+
+/* MOBILE */
+.mobile-menu{display:none;position:fixed;inset:0;background:#000;z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:24px;letter-spacing:.15em;text-transform:uppercase;color:#ccc}
+.mobile-menu a:hover{color:var(--lime)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .nav{padding:20px 24px}
+  .nav.scrolled{padding:16px 24px}
+}
+
+/* BUTTONS */
+.btn-primary{padding:16px 36px;background:var(--lime);color:#000;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:background .3s;display:inline-block;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-primary:hover{background:#fff}
+.btn-ghost{padding:16px 36px;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:15px;letter-spacing:.1em;text-transform:uppercase;transition:all .3s;display:inline-block}
+.btn-ghost:hover{background:#fff;color:#000;border-color:#fff}
+
+/* HERO */
+.page-hero{padding:140px 40px 80px;max-width:1440px;margin:0 auto}
+.hero-tag{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--lime);margin-bottom:20px}
+.hero-title{font-size:clamp(52px,8vw,108px);font-weight:700;line-height:.88;letter-spacing:-.03em}
+
+@media(max-width:900px){
+  .page-hero{padding:140px 24px 60px}
+}
+
+/* CONTACT LAYOUT */
+.contact-section{padding:60px 40px 100px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+
+/* INFO COLUMN */
+.info-group{margin-bottom:40px}
+.info-group:last-child{margin-bottom:0}
+.info-label{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.info-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
+.info-item:last-child{margin-bottom:0}
+.info-icon{flex-shrink:0;width:18px;height:18px;margin-top:2px;color:#aaa}
+.info-item p,.info-item a{font-size:19px;color:#ccc;line-height:1.7;transition:color .3s}
+.info-item a:hover{color:#fff}
+.google-link{display:inline-flex;align-items:center;gap:8px;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);margin-top:8px;transition:opacity .3s}
+.google-link:hover{opacity:.7}
+
+/* FORM COLUMN */
+.form-label{font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--lime);margin-bottom:32px}
+.contact-form{}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:0}
+.form-group{margin-bottom:28px}
+.form-group label{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#aaa;margin-bottom:10px}
+.form-group input,
+.form-group textarea{
+  display:block;
+  width:100%;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-size:19px;
+  padding:10px 0;
+  outline:none;
+  transition:border-color .3s;
+  resize:none;
+  -webkit-appearance:none;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder{color:#aaa}
+.form-group input:focus,
+.form-group textarea:focus{border-bottom-color:var(--lime)}
+.form-group textarea{min-height:120px;padding-top:12px}
+.form-submit{margin-top:8px}
+
+@media(max-width:900px){
+  .contact-section{grid-template-columns:1fr;gap:56px;padding:40px 24px 80px}
+  .form-row{grid-template-columns:1fr}
+}
+
+/* PROMO SECTION */
+.promo{padding:100px 24px;text-align:center;border-top:1px solid rgba(255,255,255,.04)}
+.promo .label{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime)}
+.promo h2{margin-top:16px;font-size:clamp(40px,6vw,72px);font-weight:700}
+.promo .sub{margin-top:12px;font-size:21px;color:#ccc}
+.promo-btns{margin-top:40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.promo-link{margin-top:24px;display:inline-block;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime)}
+.promo-link:hover{text-decoration:underline}
+
+/* FOOTER */
+.footer{padding:80px 40px 40px;border-top:1px solid rgba(255,255,255,.04)}
+.footer-grid{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px}
+.footer .label{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.footer p,.footer a{font-size:17px;color:#aaa;line-height:1.8}
+.footer a:hover{color:#fff}
+.footer-logo{height:40px;width:auto;margin-bottom:16px}
+.footer-bottom{max-width:1440px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.04);text-align:center;font-size:14px;color:#aaa}
+.footer-socials{display:flex;gap:16px;margin-top:12px}
+.footer-socials a{color:#aaa;transition:color .3s}
+.footer-socials a:hover{color:var(--lime)}
+.footer-socials svg{width:18px;height:18px}
+@media(max-width:768px){
+  .footer{padding:60px 24px 32px}
+  .footer-grid{grid-template-columns:1fr;gap:36px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo"><img src="images/homepage_img_0.png" alt="Snow Adventure"></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="esperienze.html">Esperienze</a>
+    <a href="sunset.html">Sunset</a>
+    <a href="night.html">Night</a>
+    <a href="freeride.html">Freeride</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contatti.html" class="active">Contatti</a>
+    <a href="gift-card.html">Gift Card</a>
+    <a href="#" class="nav-cta" onclick="event.preventDefault();BWOpen()">Prenota</a>
+  </div>
+  <div class="nav-burger" onclick="document.getElementById('mobile').classList.toggle('open');this.classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile">
+  <a href="index.html" onclick="closeMobile()">Home</a>
+  <a href="esperienze.html" onclick="closeMobile()">Esperienze</a>
+  <a href="sunset.html" onclick="closeMobile()">Sunset</a>
+  <a href="night.html" onclick="closeMobile()">Night</a>
+  <a href="freeride.html" onclick="closeMobile()">Freeride</a>
+  <a href="gallery.html" onclick="closeMobile()">Gallery</a>
+  <a href="contatti.html" onclick="closeMobile()">Contatti</a>
+  <a href="gift-card.html" onclick="closeMobile()">Gift Card</a>
+  <a href="#" class="btn-primary" onclick="event.preventDefault();closeMobile();BWOpen()">Prenota Ora</a>
+</div>
+
+<!-- HERO -->
+<section>
+  <div class="page-hero">
+    <p class="hero-tag">Siamo qui per te</p>
+    <h1 class="hero-title">Contatti</h1>
+  </div>
+</section>
+
+<!-- CONTACT BODY -->
+<section class="contact-section">
+
+  <!-- LEFT: INFO -->
+  <div>
+    <div class="info-group">
+      <p class="info-label">Dove siamo</p>
+      <div class="info-item">
+        <svg class="info-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+        <p>Baita Belfud<br>SP2, 24010 Foppolo BG</p>
+      </div>
+    </div>
+
+    <div class="info-group">
+      <p class="info-label">Contatti</p>
+      <div class="info-item">
+        <svg class="info-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+        <a href="tel:+393397133695">Luca: +39 339 7133695</a>
+      </div>
+      <div class="info-item">
+        <svg class="info-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+        <a href="mailto:Info@snowadventure.it">Info@snowadventure.it</a>
+      </div>
+      <div class="info-item">
+        <svg class="info-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <a href="https://wa.me/393397133695" target="_blank">WhatsApp</a>
+      </div>
+      <a href="https://g.co/kgs/snowadventurefoppolo" target="_blank" class="google-link">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+        Trovaci su Google
+      </a>
+    </div>
+  </div>
+
+  <!-- RIGHT: FORM -->
+  <div>
+    <p class="form-label">Scrivici</p>
+    <form class="contact-form" id="contactForm" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" placeholder="Mario" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label for="cognome">Cognome</label>
+          <input type="text" id="cognome" name="cognome" placeholder="Rossi" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="mario.rossi@email.it" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="messaggio">Messaggio</label>
+        <textarea id="messaggio" name="messaggio" placeholder="Scrivi il tuo messaggio..."></textarea>
+      </div>
+      <div class="form-submit">
+        <button type="submit" class="btn-primary">Invia</button>
+      </div>
+    </form>
+  </div>
+
+</section>
+
+<!-- HOTEL PROMO -->
+<section class="promo">
+  <p class="label">Un regalo per te</p>
+  <h2>10% di Sconto</h2>
+  <p class="sub">Nei nostri hotel convenzionati, prenotando un'escursione</p>
+  <div class="promo-btns">
+    <a href="https://hotelvillacarona.com/" target="_blank" class="btn-ghost">Villa Carona Hotel &amp; Spa</a>
+    <a href="https://www.hoteladler-foppolo.it/" target="_blank" class="btn-ghost">Hotel Adler Foppolo</a>
+  </div>
+  <a href="mailto:Info@snowadventure.it" class="promo-link">Contattaci per ricevere il tuo voucher →</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <img src="images/homepage_img_0.png" alt="Snow Adventure" class="footer-logo">
+      <p>Escursioni guidate in motoslitta nelle Alpi Orobie Bergamasche.</p>
+    </div>
+    <div>
+      <p class="label">Esperienze</p>
+      <a href="sunset.html" style="display:block">Orobic Sunset Tour</a>
+      <a href="night.html" style="display:block">Night Tour Adventure</a>
+      <a href="freeride.html" style="display:block">Private Freeride Ski Shuttle</a>
+      <a href="gift-card.html" style="display:block">Gift Card</a>
+      <a href="gallery.html" style="display:block">Gallery</a>
+    </div>
+    <div>
+      <p class="label">Contatti</p>
+      <p>Baita Belfud<br>SP2, 24010 Foppolo BG</p>
+      <a href="tel:+393397133695" style="display:block">Luca: +39 339 7133695</a>
+      <a href="mailto:Info@snowadventure.it" style="display:block">Info@snowadventure.it</a>
+      <div class="footer-socials">
+        <a href="https://wa.me/393397133695" target="_blank" aria-label="WhatsApp"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+        <a href="https://www.instagram.com/snowadventure_foppolo/" target="_blank" aria-label="Instagram"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2025 Snow Adventure Foppolo. Powered by Metatour. | <a href="/legal/privacy.html" style="color:inherit">Privacy</a> · <a href="/legal/terms.html" style="color:inherit">Termini</a> · <a href="/legal/cookies.html" style="color:inherit">Cookie</a></div>
+</footer>
+
+<script>
+function closeMobile(){document.getElementById('mobile').classList.remove('open')}
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
+</script>
+<script src="/js/contact-form.js"></script>
+<script src="/js/cms-adapter.js"></script>
+<script src="/js/booking-widget.js"></script>
+<script src="/js/cookie-consent.js"></script>
+</body>
+</html>

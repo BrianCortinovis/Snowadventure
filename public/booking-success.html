@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prenotazione Confermata | Snow Adventure Foppolo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060606;color:#ccc;font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.box{max-width:480px}
+h1{color:#c8e635;font-size:32px;margin-bottom:12px}
+p{font-size:15px;line-height:1.6;margin-bottom:8px}
+.ref{font-family:monospace;font-size:24px;color:#fff;background:#111;padding:16px 32px;border-radius:8px;display:inline-block;margin:20px 0;border:1px solid #222}
+.info{font-size:13px;color:#888;margin-top:16px}
+a{color:#c8e635;text-decoration:none}
+.btn{display:inline-block;margin-top:24px;padding:14px 32px;background:#c8e635;color:#000;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.btn:hover{background:#fff}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Prenotazione Confermata!</h1>
+  <p>Grazie per aver prenotato con Snow Adventure.</p>
+  <p>Il tuo riferimento è:</p>
+  <div class="ref" id="ref-code">-</div>
+  <p>Riceverai una email di conferma a breve.</p>
+  <p class="info">Punto di ritrovo: Baita Belfud, SP2, 24010 Foppolo BG<br>Arrivare 30 minuti prima della partenza.<br><br>Per domande: <a href="mailto:info@snowadventure.it">info@snowadventure.it</a> | <a href="tel:+393397133695">+39 339 7133695</a></p>
+  <a href="/" class="btn">Torna alla Home</a>
+</div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const ref = params.get('ref');
+if (ref) document.getElementById('ref-code').textContent = ref;
+</script>
+</body>
+</html>

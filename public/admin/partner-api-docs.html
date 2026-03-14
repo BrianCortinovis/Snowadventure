@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner API Documentation | Snow Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--lime:#c8e635;--bg:#050505;--card:#111;--border:#1a1a1a;--text:#ccc;--dim:#888}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.7}
+::selection{background:var(--lime);color:#000}
+a{color:var(--lime);text-decoration:none}
+a:hover{color:#fff}
+
+.page{max-width:960px;margin:0 auto;padding:60px 40px 120px}
+.back-link{display:inline-block;margin-bottom:40px;font-size:15px;color:var(--dim);transition:color .2s}
+.back-link:hover{color:var(--lime)}
+
+.doc-header{margin-bottom:48px}
+.doc-header h1{font-size:42px;font-weight:700;color:#fff;margin-bottom:12px}
+.doc-header p{font-size:20px;color:var(--dim);max-width:700px}
+.doc-header .version{display:inline-block;background:rgba(200,230,53,.12);color:var(--lime);padding:4px 14px;border-radius:20px;font-size:14px;font-weight:600;margin-top:12px}
+
+/* TOC */
+.toc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-bottom:48px}
+.toc h3{font-size:16px;color:#fff;margin-bottom:14px;text-transform:uppercase;letter-spacing:.15em}
+.toc ol{padding-left:20px}
+.toc li{margin-bottom:8px}
+.toc a{font-size:16px;color:var(--dim)}
+.toc a:hover{color:var(--lime)}
+
+/* Sections */
+.doc-section{margin-bottom:56px}
+.doc-section h2{font-size:28px;font-weight:700;color:#fff;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.doc-section h3{font-size:20px;font-weight:600;color:#fff;margin:28px 0 12px}
+.doc-section p{font-size:17px;margin-bottom:14px}
+.doc-section ul,.doc-section ol{padding-left:24px;margin-bottom:14px}
+.doc-section li{font-size:17px;margin-bottom:6px}
+
+/* Code blocks */
+pre{background:#0d0d0d;border:1px solid var(--border);border-radius:8px;padding:20px 24px;overflow-x:auto;margin-bottom:20px;font-family:'Fira Code',monospace;font-size:14px;line-height:1.6;color:#ddd}
+code{font-family:'Fira Code',monospace;font-size:14px;background:rgba(200,230,53,.08);color:var(--lime);padding:2px 6px;border-radius:4px}
+pre code{background:none;padding:0;color:inherit}
+
+/* Method badges */
+.method{display:inline-block;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;font-family:'Fira Code',monospace;margin-right:8px}
+.method-get{background:rgba(52,152,219,.2);color:#3498db}
+.method-post{background:rgba(39,174,96,.2);color:#27ae60}
+
+/* Endpoint card */
+.endpoint{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px 28px;margin-bottom:24px}
+.endpoint-url{font-size:18px;font-weight:600;color:#fff;font-family:'Fira Code',monospace;margin-bottom:12px}
+.endpoint-desc{font-size:16px;color:var(--dim);margin-bottom:16px}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:15px}
+th{text-align:left;padding:10px 14px;background:var(--card);color:var(--dim);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+td code{font-size:13px}
+
+/* Alert */
+.alert{padding:18px 24px;border-radius:8px;margin-bottom:20px;font-size:16px}
+.alert-info{background:rgba(52,152,219,.1);border-left:4px solid #3498db;color:#7ec8e3}
+.alert-warning{background:rgba(243,156,18,.1);border-left:4px solid #f39c12;color:#f5d89a}
+.alert-success{background:rgba(39,174,96,.1);border-left:4px solid #27ae60;color:#7dd3a8}
+
+@media(max-width:640px){
+  .page{padding:40px 20px 80px}
+  .doc-header h1{font-size:28px}
+  pre{padding:14px 16px;font-size:13px}
+  .endpoint{padding:16px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <a href="/admin/" class="back-link">&larr; Torna al Pannello Admin</a>
+
+  <div class="doc-header">
+    <h1>Partner API Documentation</h1>
+    <p>Integra le esperienze Snow Adventure nel tuo sito web. Consulta disponibilita, prezzi e crea prenotazioni direttamente tramite API REST.</p>
+    <span class="version">API v1</span>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>Indice</h3>
+    <ol>
+      <li><a href="#autenticazione">Autenticazione</a></li>
+      <li><a href="#base-url">Base URL</a></li>
+      <li><a href="#esperienze">Lista Esperienze</a></li>
+      <li><a href="#disponibilita">Verifica Disponibilita</a></li>
+      <li><a href="#prenotazioni">Crea Prenotazione</a></li>
+      <li><a href="#lista-prenotazioni">Lista Prenotazioni</a></li>
+      <li><a href="#commissioni">Commissioni e Prezzi</a></li>
+      <li><a href="#errori">Gestione Errori</a></li>
+      <li><a href="#limiti">Rate Limiting</a></li>
+      <li><a href="#supporto">Supporto</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. AUTH -->
+  <div class="doc-section" id="autenticazione">
+    <h2>1. Autenticazione</h2>
+    <p>Tutte le richieste API richiedono l'header <code>X-API-Key</code> con la chiave API fornita al momento dell'attivazione della partnership.</p>
+
+    <div class="alert alert-warning">La chiave API e personale e riservata. Non condividerla pubblicamente e non esporla nel codice frontend. Usa sempre chiamate server-side.</div>
+
+    <pre><code>// Header obbligatorio in ogni richiesta
+X-API-Key: sa_partner_abc123def456...</code></pre>
+
+    <h3>Esempio con cURL</h3>
+    <pre><code>curl -H "X-API-Key: sa_partner_abc123def456" \
+     https://tuodominio.com/api/partner/experiences</code></pre>
+
+    <h3>Esempio con JavaScript (server-side)</h3>
+    <pre><code>const response = await fetch('https://tuodominio.com/api/partner/experiences', {
+  headers: {
+    'X-API-Key': process.env.SNOW_ADVENTURE_API_KEY
+  }
+});
+const experiences = await response.json();</code></pre>
+  </div>
+
+  <!-- 2. BASE URL -->
+  <div class="doc-section" id="base-url">
+    <h2>2. Base URL</h2>
+    <pre><code>https://tuodominio.com/api/partner</code></pre>
+    <p>Tutti gli endpoint sono relativi a questo percorso base. Sostituisci <code>tuodominio.com</code> con il dominio effettivo del sito Snow Adventure.</p>
+  </div>
+
+  <!-- 3. ESPERIENZE -->
+  <div class="doc-section" id="esperienze">
+    <h2>3. Lista Esperienze</h2>
+    <p>Ottieni l'elenco delle esperienze disponibili per il tuo account partner. Vedrai solo le esperienze a cui sei stato autorizzato.</p>
+
+    <div class="endpoint">
+      <div class="endpoint-url"><span class="method method-get">GET</span> /api/partner/experiences</div>
+      <div class="endpoint-desc">Restituisce tutte le esperienze attive a cui il partner ha accesso.</div>
+    </div>
+
+    <h3>Risposta</h3>
+    <pre><code>[
+  {
+    "id": "uuid",
+    "name": "Orobic Sunset Tour",
+    "slug": "sunset",
+    "description": "Escursione in motoslitta al tramonto...",
+    "duration": "2 ore",
+    "price_cents": 14900,
+    "max_sleds": 6,
+    "photo_url": "images/sunset.jpg",
+    "is_active": true
+  },
+  ...
+]</code></pre>
+
+    <h3>Campi risposta</h3>
+    <table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>string</td><td>Identificativo univoco esperienza</td></tr>
+        <tr><td><code>name</code></td><td>string</td><td>Nome dell'esperienza</td></tr>
+        <tr><td><code>slug</code></td><td>string</td><td>Slug URL (usare per disponibilita e prenotazioni)</td></tr>
+        <tr><td><code>description</code></td><td>string</td><td>Descrizione completa</td></tr>
+        <tr><td><code>duration</code></td><td>string</td><td>Durata (es. "2 ore")</td></tr>
+        <tr><td><code>price_cents</code></td><td>integer</td><td>Prezzo in centesimi. Potrebbe differire se hai prezzi personalizzati</td></tr>
+        <tr><td><code>max_sleds</code></td><td>integer</td><td>Numero massimo di motoslitte per sessione</td></tr>
+        <tr><td><code>photo_url</code></td><td>string</td><td>URL immagine dell'esperienza</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. DISPONIBILITA -->
+  <div class="doc-section" id="disponibilita">
+    <h2>4. Verifica Disponibilita</h2>
+    <p>Controlla la disponibilita degli slot per una specifica esperienza e periodo.</p>
+
+    <div class="endpoint">
+      <div class="endpoint-url"><span class="method method-get">GET</span> /api/partner/availability</div>
+      <div class="endpoint-desc">Restituisce gli slot disponibili per l'esperienza e il periodo richiesto.</div>
+    </div>
+
+    <h3>Parametri query</h3>
+    <table>
+      <thead><tr><th>Parametro</th><th>Tipo</th><th>Obbligatorio</th><th>Descrizione</th></tr></thead>
+      <tbody>
+        <tr><td><code>experience</code></td><td>string</td><td>Si</td><td>Slug dell'esperienza (es. <code>sunset</code>)</td></tr>
+        <tr><td><code>from</code></td><td>string</td><td>Si</td><td>Data inizio (formato <code>YYYY-MM-DD</code>)</td></tr>
+        <tr><td><code>to</code></td><td>string</td><td>Si</td><td>Data fine (formato <code>YYYY-MM-DD</code>)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Esempio richiesta</h3>
+    <pre><code>GET /api/partner/availability?experience=sunset&from=2026-03-15&to=2026-03-22</code></pre>
+
+    <h3>Risposta</h3>
+    <pre><code>[
+  {
+    "date": "2026-03-15",
+    "time": "17:00",
+    "available_sleds": 4,
+    "max_sleds": 6,
+    "price_cents": 14900
+  },
+  {
+    "date": "2026-03-15",
+    "time": "18:30",
+    "available_sleds": 6,
+    "max_sleds": 6,
+    "price_cents": 14900
+  },
+  ...
+]</code></pre>
+
+    <div class="alert alert-info">Vengono restituiti solo gli slot con almeno 1 motoslitta disponibile. Gli slot bloccati o completi non appaiono.</div>
+  </div>
+
+  <!-- 5. PRENOTAZIONI -->
+  <div class="doc-section" id="prenotazioni">
+    <h2>5. Crea Prenotazione</h2>
+    <p>Crea una nuova prenotazione per conto di un cliente. La prenotazione viene creata in stato <code>pending</code> e deve essere confermata dal team Snow Adventure.</p>
+
+    <div class="endpoint">
+      <div class="endpoint-url"><span class="method method-post">POST</span> /api/partner/bookings</div>
+      <div class="endpoint-desc">Crea una nuova prenotazione per il cliente.</div>
+    </div>
+
+    <h3>Body (JSON)</h3>
+    <table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Obbligatorio</th><th>Descrizione</th></tr></thead>
+      <tbody>
+        <tr><td><code>experience_slug</code></td><td>string</td><td>Si</td><td>Slug dell'esperienza</td></tr>
+        <tr><td><code>date</code></td><td>string</td><td>Si</td><td>Data prenotazione (<code>YYYY-MM-DD</code>)</td></tr>
+        <tr><td><code>time</code></td><td>string</td><td>Si</td><td>Orario slot (<code>HH:MM</code>)</td></tr>
+        <tr><td><code>nome</code></td><td>string</td><td>Si</td><td>Nome del cliente</td></tr>
+        <tr><td><code>cognome</code></td><td>string</td><td>Si</td><td>Cognome del cliente</td></tr>
+        <tr><td><code>email</code></td><td>string</td><td>Si</td><td>Email del cliente</td></tr>
+        <tr><td><code>phone</code></td><td>string</td><td>No</td><td>Telefono del cliente</td></tr>
+        <tr><td><code>num_sleds</code></td><td>integer</td><td>Si</td><td>Numero di motoslitte richieste</td></tr>
+        <tr><td><code>num_people</code></td><td>integer</td><td>Si</td><td>Numero totale di persone</td></tr>
+        <tr><td><code>notes</code></td><td>string</td><td>No</td><td>Note aggiuntive</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Esempio richiesta</h3>
+    <pre><code>POST /api/partner/bookings
+Content-Type: application/json
+X-API-Key: sa_partner_abc123def456
+
+{
+  "experience_slug": "sunset",
+  "date": "2026-03-20",
+  "time": "17:00",
+  "nome": "Marco",
+  "cognome": "Rossi",
+  "email": "marco.rossi@email.com",
+  "phone": "+39 333 1234567",
+  "num_sleds": 2,
+  "num_people": 4,
+  "notes": "Cliente dell'hotel, camera 204"
+}</code></pre>
+
+    <h3>Risposta (201 Created)</h3>
+    <pre><code>{
+  "booking_ref": "SA-20260320-A1B2",
+  "status": "pending",
+  "experience": "Orobic Sunset Tour",
+  "date": "2026-03-20",
+  "time": "17:00",
+  "amount_cents": 29800,
+  "commission_cents": 2980,
+  "message": "Prenotazione creata con successo"
+}</code></pre>
+
+    <h3>Campi risposta</h3>
+    <table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+      <tbody>
+        <tr><td><code>booking_ref</code></td><td>string</td><td>Riferimento univoco della prenotazione</td></tr>
+        <tr><td><code>status</code></td><td>string</td><td>Stato iniziale (<code>pending</code>)</td></tr>
+        <tr><td><code>amount_cents</code></td><td>integer</td><td>Totale in centesimi</td></tr>
+        <tr><td><code>commission_cents</code></td><td>integer</td><td>La tua commissione in centesimi</td></tr>
+      </tbody>
+    </table>
+
+    <div class="alert alert-success">La commissione viene calcolata automaticamente in base alla percentuale concordata nel tuo contratto partner.</div>
+  </div>
+
+  <!-- 6. LISTA PRENOTAZIONI -->
+  <div class="doc-section" id="lista-prenotazioni">
+    <h2>6. Lista Prenotazioni</h2>
+    <p>Consulta lo storico delle prenotazioni effettuate tramite la tua API key.</p>
+
+    <div class="endpoint">
+      <div class="endpoint-url"><span class="method method-get">GET</span> /api/partner/bookings</div>
+      <div class="endpoint-desc">Restituisce tutte le prenotazioni create dal partner.</div>
+    </div>
+
+    <h3>Parametri query (opzionali)</h3>
+    <table>
+      <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+      <tbody>
+        <tr><td><code>status</code></td><td>string</td><td>Filtra per stato (<code>pending</code>, <code>confirmed</code>, <code>cancelled</code>, <code>completed</code>)</td></tr>
+        <tr><td><code>from</code></td><td>string</td><td>Data inizio filtro (<code>YYYY-MM-DD</code>)</td></tr>
+        <tr><td><code>to</code></td><td>string</td><td>Data fine filtro (<code>YYYY-MM-DD</code>)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Risposta</h3>
+    <pre><code>[
+  {
+    "booking_ref": "SA-20260320-A1B2",
+    "experience": "Orobic Sunset Tour",
+    "date": "2026-03-20",
+    "time": "17:00",
+    "nome": "Marco",
+    "cognome": "Rossi",
+    "num_sleds": 2,
+    "num_people": 4,
+    "amount_cents": 29800,
+    "commission_cents": 2980,
+    "status": "confirmed"
+  },
+  ...
+]</code></pre>
+  </div>
+
+  <!-- 7. COMMISSIONI -->
+  <div class="doc-section" id="commissioni">
+    <h2>7. Commissioni e Prezzi</h2>
+    <p>Ogni partner ha una percentuale di commissione configurata dall'amministratore. Le commissioni vengono calcolate automaticamente su ogni prenotazione.</p>
+
+    <h3>Come funziona</h3>
+    <ul>
+      <li>La commissione viene applicata sul totale della prenotazione</li>
+      <li>Il campo <code>commission_cents</code> nella risposta indica la commissione maturata</li>
+      <li>I partner possono avere <strong>prezzi personalizzati</strong> per specifiche esperienze, diversi dal listino pubblico</li>
+      <li>Le commissioni vengono regolate mensilmente secondo gli accordi contrattuali</li>
+    </ul>
+
+    <h3>Esempio calcolo</h3>
+    <pre><code>Prenotazione: 2 motoslitte x 149€ = 298€
+Commissione partner (10%): 29,80€
+Netto Snow Adventure: 268,20€</code></pre>
+  </div>
+
+  <!-- 8. ERRORI -->
+  <div class="doc-section" id="errori">
+    <h2>8. Gestione Errori</h2>
+    <p>L'API restituisce errori in formato JSON con un campo <code>error</code> descrittivo.</p>
+
+    <table>
+      <thead><tr><th>HTTP Status</th><th>Significato</th><th>Esempio</th></tr></thead>
+      <tbody>
+        <tr><td><code>400</code></td><td>Richiesta non valida</td><td>Parametri mancanti o formato errato</td></tr>
+        <tr><td><code>401</code></td><td>Non autenticato</td><td>API Key mancante o non valida</td></tr>
+        <tr><td><code>403</code></td><td>Non autorizzato</td><td>Partner disattivato o esperienza non consentita</td></tr>
+        <tr><td><code>404</code></td><td>Non trovato</td><td>Esperienza o slot non esistente</td></tr>
+        <tr><td><code>409</code></td><td>Conflitto</td><td>Slot non piu disponibile (overbooking)</td></tr>
+        <tr><td><code>429</code></td><td>Troppe richieste</td><td>Rate limit superato</td></tr>
+        <tr><td><code>500</code></td><td>Errore server</td><td>Errore interno</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Esempio risposta errore</h3>
+    <pre><code>{
+  "error": "Slot non disponibile per la data e l'orario richiesto",
+  "code": "SLOT_UNAVAILABLE"
+}</code></pre>
+  </div>
+
+  <!-- 9. RATE LIMITING -->
+  <div class="doc-section" id="limiti">
+    <h2>9. Rate Limiting</h2>
+    <p>Per garantire la stabilita del servizio, le richieste API sono limitate a:</p>
+    <ul>
+      <li><strong>100 richieste al minuto</strong> per API key</li>
+      <li><strong>5.000 richieste al giorno</strong> per API key</li>
+    </ul>
+    <p>In caso di superamento, riceverai un errore <code>429 Too Many Requests</code>. Implementa un meccanismo di retry con backoff esponenziale.</p>
+  </div>
+
+  <!-- 10. SUPPORTO -->
+  <div class="doc-section" id="supporto">
+    <h2>10. Supporto</h2>
+    <p>Per assistenza tecnica sull'integrazione API:</p>
+    <ul>
+      <li>Email: <a href="mailto:Info@snowadventure.it">Info@snowadventure.it</a></li>
+      <li>Telefono: <a href="tel:+393397133695">+39 339 7133695</a> (Luca)</li>
+    </ul>
+    <div class="alert alert-info">Per richiedere una nuova API key, la modifica delle esperienze consentite, o variazioni sulla commissione, contatta l'amministratore di Snow Adventure.</div>
+  </div>
+</div>
+
+</body>
+</html>

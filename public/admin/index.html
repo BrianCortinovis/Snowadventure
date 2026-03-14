@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Snow Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <img src="/images/homepage_img_0.png" alt="Snow Adventure" class="login-logo">
+    <h1>Pannello Admin</h1>
+    <form id="login-form">
+      <input type="email" id="login-user" placeholder="Email" required>
+      <input type="password" id="login-pass" placeholder="Password" required>
+      <button type="submit" class="btn-lime">Accedi</button>
+      <p id="login-error" class="error" style="display:none"></p>
+    </form>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="/images/homepage_img_0.png" alt="Snow Adventure">
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" data-section="dashboard" class="active"><span class="icon">📊</span> Dashboard</a>
+      <a href="#" data-section="calendar"><span class="icon">📅</span> Calendario</a>
+      <a href="#" data-section="bookings"><span class="icon">📋</span> Prenotazioni</a>
+      <a href="#" data-section="gallery"><span class="icon">🖼️</span> Gallery</a>
+      <a href="#" data-section="giftcards"><span class="icon">🎁</span> Gift Cards</a>
+      <a href="#" data-section="vouchers"><span class="icon">🏷️</span> Voucher</a>
+      <a href="#" data-section="contacts"><span class="icon">✉️</span> Messaggi</a>
+      <a href="#" data-section="experiences"><span class="icon">⛷️</span> Esperienze</a>
+      <a href="#" data-section="partners"><span class="icon">🤝</span> Partner</a>
+      <a href="#" data-section="apidocs"><span class="icon">📖</span> Docs API</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/" target="_blank">← Vai al sito</a>
+      <a href="#" id="logout-btn">Logout</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <!-- DASHBOARD -->
+    <section id="sec-dashboard" class="section active">
+      <h2>Dashboard</h2>
+      <div class="stats-grid" id="dashboard-stats"></div>
+      <h3>Prenotazioni Recenti</h3>
+      <div class="table-wrap" id="dashboard-recent"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section id="sec-calendar" class="section">
+      <h2>Calendario Disponibilità</h2>
+      <div class="toolbar">
+        <select id="cal-experience"></select>
+        <input type="month" id="cal-month">
+        <button class="btn-lime btn-sm" onclick="loadCalendar()">Carica</button>
+        <button class="btn-outline btn-sm" onclick="showAddSlotModal()">+ Aggiungi Slot</button>
+        <button class="btn-outline btn-sm" onclick="showBulkSlotModal()">+ Bulk Slots</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </section>
+
+    <!-- BOOKINGS -->
+    <section id="sec-bookings" class="section">
+      <h2>Prenotazioni</h2>
+      <div class="toolbar">
+        <select id="bookings-status-filter">
+          <option value="">Tutti gli stati</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confermato</option>
+          <option value="cancelled">Cancellato</option>
+          <option value="completed">Completato</option>
+          <option value="expired">Scaduto</option>
+        </select>
+        <select id="bookings-exp-filter">
+          <option value="">Tutte le esperienze</option>
+        </select>
+        <button class="btn-lime btn-sm" onclick="loadBookings()">Filtra</button>
+      </div>
+      <div class="table-wrap" id="bookings-table"></div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="sec-gallery" class="section">
+      <h2>Gestione Gallery</h2>
+      <div class="toolbar">
+        <form id="gallery-upload-form" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center">
+          <input type="file" name="image" accept="image/*" required>
+          <input type="text" name="altText" placeholder="Testo alternativo" style="width:200px">
+          <button type="submit" class="btn-lime btn-sm">Carica</button>
+        </form>
+      </div>
+      <div class="gallery-admin-grid" id="gallery-grid"></div>
+    </section>
+
+    <!-- GIFT CARDS -->
+    <section id="sec-giftcards" class="section">
+      <h2>Gift Cards</h2>
+      <div class="table-wrap" id="giftcards-table"></div>
+    </section>
+
+    <!-- VOUCHERS -->
+    <section id="sec-vouchers" class="section">
+      <h2>Voucher / Codici Sconto</h2>
+      <div class="toolbar">
+        <button class="btn-lime btn-sm" onclick="showCreateVoucherModal()">+ Crea Voucher</button>
+      </div>
+      <div class="table-wrap" id="vouchers-table"></div>
+    </section>
+
+    <!-- CONTACTS -->
+    <section id="sec-contacts" class="section">
+      <h2>Messaggi</h2>
+      <div class="table-wrap" id="contacts-table"></div>
+    </section>
+
+    <!-- EXPERIENCES -->
+    <section id="sec-experiences" class="section">
+      <h2>Esperienze</h2>
+      <div class="toolbar">
+        <button class="btn-lime btn-sm" onclick="showCreateExperienceModal()">+ Nuova Esperienza</button>
+      </div>
+      <div class="table-wrap" id="experiences-table"></div>
+    </section>
+
+    <!-- PARTNERS -->
+    <section id="sec-partners" class="section">
+      <h2>Partner</h2>
+      <div class="toolbar">
+        <button class="btn-lime btn-sm" onclick="showCreatePartnerModal()">+ Nuovo Partner</button>
+        <button class="btn-outline btn-sm" onclick="document.querySelector('[data-section=apidocs]').click()">📖 Documentazione API</button>
+      </div>
+      <div class="table-wrap" id="partners-table"></div>
+    </section>
+
+    <!-- API DOCS -->
+    <section id="sec-apidocs" class="section">
+      <h2>Documentazione API Partner</h2>
+      <div style="margin-bottom:24px">
+        <a href="/admin/partner-api-docs.html" target="_blank" class="btn-lime" style="display:inline-block;text-decoration:none">Apri Documentazione Completa ↗</a>
+        <span style="color:var(--dim);margin-left:12px;font-size:15px">Condividi questo link con i partner</span>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-bottom:24px">
+        <h3 style="color:#fff;margin-bottom:16px;font-size:20px">Come attivare un partner</h3>
+        <ol style="padding-left:20px;font-size:16px;line-height:2;color:var(--text)">
+          <li>Vai alla sezione <strong style="color:var(--lime)">Partner</strong> e clicca <strong>"+ Nuovo Partner"</strong></li>
+          <li>Inserisci nome, email e azienda del partner</li>
+          <li>Imposta la <strong>percentuale di commissione</strong> concordata</li>
+          <li>Seleziona le <strong>esperienze</strong> a cui il partner puo accedere (lascia vuoto per tutte)</li>
+          <li>Clicca <strong>"Crea Partner"</strong> — verra generata una <strong>API Key unica</strong></li>
+          <li>Copia la API Key e inviala al partner insieme al link della documentazione</li>
+        </ol>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-bottom:24px">
+        <h3 style="color:#fff;margin-bottom:16px;font-size:20px">Endpoint disponibili per i partner</h3>
+        <table>
+          <thead><tr><th>Metodo</th><th>Endpoint</th><th>Descrizione</th></tr></thead>
+          <tbody>
+            <tr><td><span style="color:#3498db;font-weight:600">GET</span></td><td style="font-family:monospace;color:var(--lime)">/api/partner/experiences</td><td>Lista esperienze disponibili</td></tr>
+            <tr><td><span style="color:#3498db;font-weight:600">GET</span></td><td style="font-family:monospace;color:var(--lime)">/api/partner/availability</td><td>Verifica disponibilita slot</td></tr>
+            <tr><td><span style="color:#27ae60;font-weight:600">POST</span></td><td style="font-family:monospace;color:var(--lime)">/api/partner/bookings</td><td>Crea una prenotazione</td></tr>
+            <tr><td><span style="color:#3498db;font-weight:600">GET</span></td><td style="font-family:monospace;color:var(--lime)">/api/partner/bookings</td><td>Lista prenotazioni del partner</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-bottom:24px">
+        <h3 style="color:#fff;margin-bottom:16px;font-size:20px">Autenticazione</h3>
+        <p style="font-size:16px;margin-bottom:14px">I partner devono includere l'header <code style="background:rgba(200,230,53,.1);color:var(--lime);padding:2px 8px;border-radius:4px;font-size:15px">X-API-Key</code> in ogni richiesta:</p>
+        <pre style="background:#0d0d0d;border:1px solid var(--border);border-radius:8px;padding:18px 22px;font-family:monospace;font-size:15px;color:#ddd;overflow-x:auto">curl -H "X-API-Key: sa_partner_abc123..." \
+     https://tuodominio.com/api/partner/experiences</pre>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px 32px">
+        <h3 style="color:#fff;margin-bottom:16px;font-size:20px">Gestione chiavi API</h3>
+        <ul style="padding-left:20px;font-size:16px;line-height:2;color:var(--text)">
+          <li>Ogni partner riceve una chiave unica alla creazione</li>
+          <li>Puoi <strong>rigenerare</strong> la chiave dalla scheda di modifica partner — la vecchia chiave smettera di funzionare</li>
+          <li>I partner <strong>disattivati</strong> non possono usare l'API</li>
+          <li>Puoi limitare le esperienze accessibili per ogni partner</li>
+          <li>I <strong>prezzi personalizzati</strong> (JSON) permettono di offrire tariffe diverse dal listino pubblico</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" style="display:none" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modal-title"></h3>
+      <button onclick="closeModal()" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

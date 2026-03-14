@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esperienze | Snow Adventure Foppolo</title>
+<meta name="description" content="Scopri tutte le esperienze in motoslitta di Snow Adventure Foppolo: Sunset Tour, Night Tour, Freeride e molto altro.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--lime:#c8e635;--dark:#050505}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#000}
+a{color:inherit;text-decoration:none}
+img,video{display:block;width:100%;height:100%;object-fit:cover}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+.nav.scrolled{background:rgba(0,0,0,.85);backdrop-filter:blur(20px);padding:14px 48px}
+.nav-logo img{height:56px;width:auto}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;transition:color .3s}
+.nav-links a:hover{color:#fff}
+.nav-links a.active{color:#fff}
+.nav-cta{font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:12px 26px;background:var(--lime);color:#000;font-weight:600;transition:background .3s}
+.nav-cta:hover{background:#fff}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101}
+.nav-burger span{display:block;width:28px;height:2px;background:#fff;transition:all .3s}
+
+/* MOBILE */
+.mobile-menu{display:none;position:fixed;inset:0;background:#000;z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:24px;letter-spacing:.15em;text-transform:uppercase;color:#ccc}
+.mobile-menu a:hover{color:var(--lime)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .nav{padding:20px 24px}
+  .nav.scrolled{padding:16px 24px}
+}
+
+/* HERO */
+.hero{padding-top:180px;padding-bottom:60px;text-align:center;padding-left:24px;padding-right:24px}
+.hero-tag{font-size:13px;letter-spacing:.4em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.hero h1{font-size:clamp(48px,10vw,100px);font-weight:700;line-height:.88;letter-spacing:-.03em}
+.hero-sub{margin-top:20px;font-size:20px;color:rgba(255,255,255,.7);max-width:600px;margin-left:auto;margin-right:auto;line-height:1.7}
+
+/* CATALOG GRID */
+.catalog{padding:40px 40px 120px;max-width:1440px;margin:0 auto}
+.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.catalog-card{background:#111;border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden;transition:transform .3s,border-color .3s}
+.catalog-card:hover{transform:translateY(-4px);border-color:rgba(200,230,53,.3)}
+.catalog-card-img{height:240px;overflow:hidden;position:relative}
+.catalog-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.catalog-card:hover .catalog-card-img img{transform:scale(1.06)}
+.catalog-card-badge{position:absolute;top:12px;right:12px;background:var(--lime);color:#000;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.catalog-card-body{padding:28px}
+.catalog-card-name{font-size:22px;font-weight:700;margin-bottom:8px}
+.catalog-card-meta{display:flex;gap:16px;font-size:15px;color:#888;margin-bottom:14px}
+.catalog-card-meta span{display:flex;align-items:center;gap:4px}
+.catalog-card-desc{font-size:17px;color:#aaa;line-height:1.7;margin-bottom:20px}
+.catalog-card-footer{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.catalog-card-price{font-size:24px;font-weight:700;color:var(--lime)}
+.catalog-card-price small{font-size:14px;font-weight:400;color:#888}
+.btn-primary{padding:14px 28px;background:var(--lime);color:#000;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:background .3s;display:inline-block;border-radius:4px}
+.btn-primary:hover{background:#fff}
+.catalog-loading{text-align:center;padding:80px;color:#666;font-size:18px}
+
+@media(max-width:1024px){.catalog-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+  .catalog-grid{grid-template-columns:1fr}
+  .catalog{padding:24px 20px 80px}
+  .hero{padding-top:140px;padding-bottom:40px}
+  .catalog-card-img{height:200px}
+}
+
+/* PARTNER CTA */
+.partner-cta{padding:80px 40px;text-align:center;border-top:1px solid rgba(255,255,255,.04)}
+.partner-cta h2{font-size:32px;font-weight:700;margin-bottom:12px}
+.partner-cta p{font-size:19px;color:#888;max-width:600px;margin:0 auto 28px;line-height:1.7}
+
+/* FOOTER */
+.footer{padding:80px 40px 40px;border-top:1px solid rgba(255,255,255,.04)}
+.footer-grid{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px}
+.footer .label{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.footer p,.footer a{font-size:17px;color:#aaa;line-height:1.8}
+.footer a:hover{color:#fff}
+.footer-logo{height:40px;width:auto;margin-bottom:16px}
+.footer-bottom{max-width:1440px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.04);text-align:center;font-size:14px;color:#aaa}
+@media(max-width:768px){.footer{padding:60px 24px 32px}.footer-grid{grid-template-columns:1fr;gap:36px}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo"><img src="images/homepage_img_0.png" alt="Snow Adventure"></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="esperienze.html" class="active">Esperienze</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contatti.html">Contatti</a>
+    <a href="gift-card.html">Gift Card</a>
+    <a href="#" class="nav-cta" onclick="event.preventDefault();BWOpen()">Prenota</a>
+  </div>
+  <div class="nav-burger" onclick="document.getElementById('mobile').classList.toggle('open');this.classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile">
+  <a href="index.html" onclick="closeMobile()">Home</a>
+  <a href="esperienze.html" onclick="closeMobile()">Esperienze</a>
+  <a href="gallery.html" onclick="closeMobile()">Gallery</a>
+  <a href="contatti.html" onclick="closeMobile()">Contatti</a>
+  <a href="gift-card.html" onclick="closeMobile()">Gift Card</a>
+  <a href="#" class="btn-primary" onclick="event.preventDefault();closeMobile();BWOpen()">Prenota Ora</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-tag">Catalogo completo</p>
+  <h1>Le Nostre<br>Esperienze</h1>
+  <p class="hero-sub">Scopri tutte le avventure in motoslitta disponibili nelle Alpi Orobie Bergamasche. Esperienze uniche, dal tramonto alla notte, dal freeride al team building.</p>
+</section>
+
+<!-- CATALOG -->
+<section class="catalog">
+  <div class="catalog-grid" id="catalog-grid">
+    <div class="catalog-loading">Caricamento esperienze...</div>
+  </div>
+</section>
+
+<!-- PARTNER CTA -->
+<section class="partner-cta">
+  <h2>Sei un partner?</h2>
+  <p>Hotel, rifugi e tour operator possono integrare le nostre esperienze nel proprio sito tramite API dedicata. Contattaci per attivare la partnership.</p>
+  <a href="contatti.html" class="btn-primary">Diventa Partner</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <img src="images/homepage_img_0.png" alt="Snow Adventure" class="footer-logo">
+      <p>Escursioni guidate in motoslitta nelle Alpi Orobie Bergamasche.</p>
+    </div>
+    <div>
+      <p class="label">Esperienze</p>
+      <a href="sunset.html" style="display:block">Orobic Sunset Tour</a>
+      <a href="night.html" style="display:block">Night Tour Adventure</a>
+      <a href="freeride.html" style="display:block">Private Freeride Ski Shuttle</a>
+      <a href="esperienze.html" style="display:block">Tutte le Esperienze</a>
+      <a href="gift-card.html" style="display:block">Gift Card</a>
+    </div>
+    <div>
+      <p class="label">Contatti</p>
+      <p>Baita Belfud<br>SP2, 24010 Foppolo BG</p>
+      <a href="tel:+393397133695" style="display:block">Luca: +39 339 7133695</a>
+      <a href="mailto:Info@snowadventure.it" style="display:block">Info@snowadventure.it</a>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2025 Snow Adventure Foppolo. Powered by Metatour. | <a href="/legal/privacy.html" style="color:inherit">Privacy</a> · <a href="/legal/terms.html" style="color:inherit">Termini</a> · <a href="/legal/cookies.html" style="color:inherit">Cookie</a></div>
+</footer>
+
+<script>
+function closeMobile(){document.getElementById('mobile').classList.remove('open')}
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
+
+// Load experiences from API
+async function loadCatalog() {
+  try {
+    const res = await fetch('/api/experiences');
+    const experiences = await res.json();
+    const active = experiences.filter(e => e.is_active).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    if (!active.length) {
+      document.getElementById('catalog-grid').innerHTML = '<p style="color:#666;text-align:center;padding:60px">Nessuna esperienza disponibile al momento.</p>';
+      return;
+    }
+
+    const defaultPages = { sunset: 'sunset.html', night: 'night.html', freeride: 'freeride.html' };
+
+    document.getElementById('catalog-grid').innerHTML = active.map(e => {
+      const price = e.price_cents ? (e.price_cents / 100).toFixed(0) + '€' : 'Su richiesta';
+      const priceSmall = e.price_cents ? '<small>/ persona</small>' : '';
+      const link = defaultPages[e.slug] || '#';
+      const hasPage = !!defaultPages[e.slug];
+      const badge = e.is_default ? '' : '<div class="catalog-card-badge">Novita</div>';
+      const cta = hasPage
+        ? `<a href="${link}" class="btn-primary">Scopri</a>`
+        : `<a href="#" class="btn-primary" onclick="event.preventDefault();BWOpen('${e.slug}')">Prenota</a>`;
+
+      return `<div class="catalog-card">
+        <div class="catalog-card-img">
+          <img src="${e.photo_url || 'images/homepage_img_8.jpeg'}" alt="${e.name}" loading="lazy">
+          ${badge}
+        </div>
+        <div class="catalog-card-body">
+          <h3 class="catalog-card-name">${e.name}</h3>
+          <div class="catalog-card-meta">
+            ${e.duration ? `<span>&#9201; ${e.duration}</span>` : ''}
+            <span>&#10052; Max ${e.max_sleds} motoslitte</span>
+          </div>
+          <p class="catalog-card-desc">${e.description || ''}</p>
+          <div class="catalog-card-footer">
+            <div class="catalog-card-price">${price} ${priceSmall}</div>
+            ${cta}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    document.getElementById('catalog-grid').innerHTML = '<p style="color:#e74c3c;text-align:center;padding:60px">Errore nel caricamento delle esperienze.</p>';
+  }
+}
+
+loadCatalog();
+</script>
+<script src="/js/booking-widget.js"></script>
+<script src="/js/cookie-consent.js"></script>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snow Adventure Foppolo — Spot</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #c8e635;
+  --accent-rgb: 200, 230, 53;
+  --bg: #060606;
+  --white: #fff;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--white); -webkit-font-smoothing: antialiased; }
+
+#particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+#progress-bar { position: fixed; bottom: 0; left: 0; height: 3px; background: var(--accent); z-index: 200; width: 0%; transition: width 0.3s linear; }
+
+.scene-container { position: fixed; inset: 0; z-index: 10; }
+.scene {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0.97);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.scene.active { opacity: 1; transform: scale(1); pointer-events: auto; }
+.scene-content { max-width: 920px; width: 100%; padding: 0 24px; text-align: center; }
+
+.headline {
+  font-size: clamp(28px, 5.5vw, 58px);
+  font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin-bottom: 12px;
+}
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent), #e8ff70, var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.subheadline { font-size: clamp(15px, 2.2vw, 20px); font-weight: 300; color: rgba(255,255,255,0.65); line-height: 1.5; }
+.scene-tag {
+  margin-bottom: 4px; color: var(--accent); font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; font-weight: 600;
+}
+
+.glass { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(20px); border-radius: 16px; }
+.glass-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(12px); border-radius: 10px; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+@keyframes slideInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes slideInRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes pulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
+@keyframes typewriter-blink { 0%,100%{ border-color:var(--accent); } 50%{ border-color:transparent; } }
+@keyframes orbit { from { transform:rotate(0deg) translateX(var(--orbit-r)) rotate(0deg); } to { transform:rotate(360deg) translateX(var(--orbit-r)) rotate(-360deg); } }
+@keyframes scanLine { 0%{ top:0; } 100%{ top:100%; } }
+@keyframes riseBar { from { transform:scaleY(0); } to { transform:scaleY(1); } }
+@keyframes shimmer { 0%{ background-position:-200% center; } 100%{ background-position:200% center; } }
+
+[data-anim] { opacity: 0; }
+[data-anim].animate { animation-fill-mode: both; }
+[data-anim="fadeUp"].animate { animation: fadeUp 0.6s ease both; }
+[data-anim="scaleIn"].animate { animation: scaleIn 0.6s ease both; }
+[data-anim="slideInLeft"].animate { animation: slideInLeft 0.6s ease both; }
+[data-anim="slideInRight"].animate { animation: slideInRight 0.6s ease both; }
+
+/* ===== SCENE 0 — COLD OPEN ===== */
+#scene-0 .logo-wrap { display:flex; flex-direction:column; align-items:center; gap:20px; }
+#scene-0 .logo-text {
+  font-size: clamp(52px,11vw,120px); font-weight:800; letter-spacing:-0.04em; line-height:0.85;
+  background: linear-gradient(135deg, #fff 40%, var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter: drop-shadow(0 0 40px rgba(var(--accent-rgb),0.3));
+}
+#scene-0 .tagline-tw {
+  font-size: clamp(15px,2.2vw,20px); font-weight:300; color:rgba(255,255,255,0.8);
+  letter-spacing:0.15em; border-right:2px solid var(--accent);
+  white-space:nowrap; overflow:hidden; width:0;
+  animation: typewriter-blink 0.7s step-end infinite;
+}
+#scene-0 .location-tag { font-size:12px; letter-spacing:0.4em; text-transform:uppercase; color:var(--accent); margin-top:12px; }
+
+/* ===== BOOKING CARD ===== */
+.booking-card { padding:36px 28px; max-width:420px; margin:20px auto 0; }
+.booking-card .card-tag { font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; }
+.booking-card .form-row { display:flex; gap:8px; margin-bottom:8px; }
+.booking-card .form-field {
+  flex:1; padding:12px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px; color:#666; font-size:13px; font-family:'Inter',sans-serif;
+  transition: border-color 0.3s, color 0.3s;
+}
+.booking-card .form-field.filled { border-color:rgba(var(--accent-rgb),0.4); color:#fff; }
+.booking-card .book-btn {
+  width:100%; padding:14px; background:var(--accent); color:#000; border:none; border-radius:8px;
+  font-size:14px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-top:10px; cursor:pointer;
+}
+.booking-card .counter-line { margin-top:14px; text-align:center; font-size:13px; color:rgba(255,255,255,0.45); }
+.booking-card .counter-line strong { color:var(--accent); font-size:17px; font-weight:700; }
+
+/* ===== PLANNING GRID ===== */
+.planning-grid { margin:24px auto 0; max-width:580px; }
+.planning-header { display:flex; gap:0; margin-bottom:4px; }
+.planning-header span { flex:1; text-align:center; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#444; }
+.planning-row { display:flex; align-items:center; gap:0; border-bottom:1px solid rgba(255,255,255,0.03); height:40px; }
+.planning-label { width:90px; font-size:12px; color:#777; padding-left:6px; flex-shrink:0; }
+.planning-bar-wrap { flex:1; display:flex; height:26px; position:relative; }
+.planning-bar {
+  position:absolute; height:100%; border-radius:4px;
+  transform:scaleX(0); transform-origin:left;
+  transition: transform 0.8s cubic-bezier(0.22,1,0.36,1);
+}
+.planning-bar.animate { transform:scaleX(1); }
+.planning-bar .bar-label { position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:9px; font-weight:600; color:rgba(0,0,0,0.7); white-space:nowrap; }
+
+/* ===== PAYMENT CARDS ===== */
+.payment-split { display:flex; gap:16px; max-width:640px; margin:24px auto 0; align-items:stretch; }
+.payment-left { flex:1.2; text-align:left; }
+.payment-right { flex:1; display:flex; flex-direction:column; gap:8px; }
+.pay-method {
+  display:flex; align-items:center; gap:12px; padding:14px 16px;
+  border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);
+  transition: border-color 0.4s, background 0.4s; cursor:default;
+}
+.pay-method.active { border-color:rgba(var(--accent-rgb),0.5); background:rgba(var(--accent-rgb),0.06); }
+.pay-icon {
+  width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:700; flex-shrink:0;
+}
+.pay-icon.stripe { background:rgba(99,91,255,0.15); color:#635bff; }
+.pay-icon.paypal { background:rgba(0,112,187,0.15); color:#0070ba; }
+.pay-icon.satispay { background:rgba(232,56,56,0.15); color:#e83838; }
+.pay-name { font-size:14px; font-weight:600; }
+.pay-sub { font-size:11px; color:#666; }
+.pay-summary { padding:20px; margin-top:10px; }
+.pay-summary .pay-line { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; color:#999; border-bottom:1px solid rgba(255,255,255,0.03); }
+.pay-summary .pay-total { display:flex; justify-content:space-between; padding:10px 0 0; font-size:20px; font-weight:800; color:var(--accent); }
+.pay-summary .pay-status {
+  margin-top:12px; padding:8px 14px; border-radius:6px; text-align:center;
+  background:rgba(var(--accent-rgb),0.1); border:1px solid rgba(var(--accent-rgb),0.2);
+  font-size:12px; font-weight:600; color:var(--accent);
+  opacity:0; transform:scale(0.9); transition: opacity 0.4s, transform 0.4s;
+}
+.pay-summary .pay-status.show { opacity:1; transform:scale(1); }
+
+/* ===== GUEST CARD ===== */
+.guest-card { padding:28px; max-width:370px; margin:20px auto 0; position:relative; overflow:hidden; }
+.guest-card .gc-header { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.guest-card .gc-avatar {
+  width:50px; height:50px; border-radius:50%;
+  background:linear-gradient(135deg,rgba(var(--accent-rgb),0.3),rgba(var(--accent-rgb),0.1));
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:700; color:var(--accent);
+}
+.guest-card .gc-name { font-size:18px; font-weight:700; }
+.guest-card .gc-email { font-size:12px; color:#777; }
+.guest-card .gc-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+.guest-card .gc-label { font-size:11px; color:#555; text-transform:uppercase; letter-spacing:0.15em; }
+.guest-card .gc-val { font-size:14px; color:#ccc; }
+.guest-card .gc-badge {
+  display:inline-flex; align-items:center; gap:6px; margin-top:14px; padding:7px 14px;
+  background:rgba(var(--accent-rgb),0.12); border:1px solid rgba(var(--accent-rgb),0.25);
+  border-radius:6px; font-size:12px; color:var(--accent); font-weight:600;
+}
+.guest-card .scan-line {
+  position:absolute; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  top:0; opacity:0; transition:opacity 0.3s;
+}
+.guest-card .scan-line.active { opacity:1; animation:scanLine 1.5s ease-in-out; }
+
+/* ===== FLIP GRID ===== */
+.flip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:400px; margin:24px auto 0; }
+.flip-card { perspective:600px; height:76px; }
+.flip-card-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+.flip-card.flipped .flip-card-inner { transform:rotateY(180deg); }
+.flip-face { position:absolute; inset:0; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; backface-visibility:hidden; font-size:11px; font-weight:600; }
+.flip-front { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); color:#777; }
+.flip-back { background:rgba(var(--accent-rgb),0.12); border:1px solid rgba(var(--accent-rgb),0.25); color:var(--accent); transform:rotateY(180deg); }
+.flip-face .flip-icon { font-size:18px; margin-bottom:3px; }
+.flip-face .flip-price { font-size:15px; font-weight:800; }
+
+/* ===== LINE CHART ===== */
+.chart-wrap { max-width:540px; margin:24px auto 0; position:relative; }
+.chart-wrap svg { width:100%; height:auto; }
+.chart-line { fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:600; stroke-dashoffset:600; transition:stroke-dashoffset 2s cubic-bezier(0.22,1,0.36,1); }
+.chart-line.animate { stroke-dashoffset:0; }
+.chart-area { opacity:0; transition:opacity 1.5s ease 0.5s; }
+.chart-area.animate { opacity:1; }
+.chart-price-tag {
+  position:absolute; top:14px; right:20px; padding:7px 14px; border-radius:8px;
+  background:rgba(var(--accent-rgb),0.15); border:1px solid rgba(var(--accent-rgb),0.3);
+  font-size:20px; font-weight:800; color:var(--accent);
+  opacity:0; transform:scale(0.8); transition:opacity 0.5s ease 1.2s, transform 0.5s ease 1.2s;
+}
+.chart-price-tag.animate { opacity:1; transform:scale(1); }
+
+/* ===== ADMIN DASHBOARD (KPI) ===== */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; max-width:700px; margin:24px auto 0; }
+.kpi-card { padding:20px 14px; text-align:center; }
+.kpi-value { font-size:clamp(22px,3.5vw,34px); font-weight:800; color:var(--accent); line-height:1; }
+.kpi-label { margin-top:6px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#777; }
+.kpi-bar-wrap { margin-top:10px; height:4px; background:rgba(255,255,255,0.04); border-radius:2px; overflow:hidden; }
+.kpi-bar { height:100%; background:var(--accent); border-radius:2px; width:0%; transition:width 1.5s cubic-bezier(0.22,1,0.36,1); }
+
+/* ===== ORBIT ===== */
+.orbit-wrap { position:relative; width:280px; height:280px; margin:16px auto 0; }
+.orbit-center {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:74px; height:74px; border-radius:50%;
+  background:rgba(var(--accent-rgb),0.1); border:2px solid rgba(var(--accent-rgb),0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:800; color:var(--accent); letter-spacing:0.05em; text-align:center; line-height:1.2;
+}
+.orbit-ring { position:absolute; inset:0; border:1px dashed rgba(255,255,255,0.06); border-radius:50%; }
+.orbit-item {
+  position:absolute; top:50%; left:50%; width:48px; height:48px; margin:-24px 0 0 -24px;
+  --orbit-r:120px; animation:orbit 12s linear infinite;
+  display:flex; align-items:center; justify-content:center; border-radius:50%;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  font-size:9px; font-weight:700; color:#ccc; text-align:center; line-height:1.1;
+}
+
+/* ===== INVOICE CARD ===== */
+.invoice-card { padding:28px; max-width:380px; margin:20px auto 0; }
+.invoice-card .inv-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+.invoice-card .inv-logo { font-size:15px; font-weight:700; color:var(--accent); }
+.invoice-card .inv-num { font-size:11px; color:#555; }
+.invoice-card .inv-row {
+  display:flex; justify-content:space-between; padding:9px 0;
+  border-bottom:1px solid rgba(255,255,255,0.03); font-size:13px; color:#ccc;
+  opacity:0; transform:translateX(-20px); transition:opacity 0.4s ease, transform 0.4s ease;
+}
+.invoice-card .inv-row.animate { opacity:1; transform:translateX(0); }
+.invoice-card .inv-total {
+  display:flex; justify-content:space-between; padding:14px 0 0;
+  font-size:18px; font-weight:800; color:var(--accent); opacity:0; transition:opacity 0.4s ease 0.8s;
+}
+.invoice-card .inv-total.animate { opacity:1; }
+.invoice-card .inv-badge {
+  display:inline-flex; align-items:center; gap:6px; margin-top:14px; padding:7px 14px;
+  background:rgba(var(--accent-rgb),0.1); border:1px solid rgba(var(--accent-rgb),0.2);
+  border-radius:6px; font-size:11px; font-weight:600; color:var(--accent);
+  opacity:0; transform:scale(0.8); transition:opacity 0.4s ease 1s, transform 0.4s ease 1s;
+}
+.invoice-card .inv-badge.animate { opacity:1; transform:scale(1); }
+
+/* ===== ADMIN TABLE ===== */
+.admin-table { max-width:660px; margin:20px auto 0; padding:6px; border-radius:16px; overflow:hidden; }
+.admin-row {
+  display:flex; align-items:center; gap:10px; padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.03); font-size:12px;
+  opacity:0; transform:translateX(-20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.admin-row.animate { opacity:1; transform:translateX(0); }
+.admin-row:last-child { border-bottom:none; }
+.admin-ref { font-family:monospace; color:var(--accent); font-weight:600; font-size:11px; min-width:110px; }
+.admin-name { font-weight:600; color:#ddd; min-width:100px; }
+.admin-exp { color:#888; flex:1; }
+.admin-date { color:#666; min-width:70px; text-align:right; }
+.admin-status {
+  padding:4px 10px; border-radius:4px; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.08em; min-width:80px; text-align:center;
+  transition: background 0.4s, color 0.4s, border-color 0.4s;
+}
+.admin-status.pending { background:rgba(255,180,0,0.12); color:#ffb400; border:1px solid rgba(255,180,0,0.2); }
+.admin-status.confirmed { background:rgba(80,200,120,0.12); color:#50c878; border:1px solid rgba(80,200,120,0.2); }
+.admin-status.cancelled { background:rgba(255,80,80,0.12); color:#ff5050; border:1px solid rgba(255,80,80,0.2); }
+.admin-status.completed { background:rgba(80,160,255,0.12); color:#50a0ff; border:1px solid rgba(80,160,255,0.2); }
+.admin-header {
+  display:flex; align-items:center; gap:10px; padding:10px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.06); font-size:10px;
+  letter-spacing:0.15em; text-transform:uppercase; color:#555;
+}
+.admin-header span:first-child { min-width:110px; }
+.admin-header span:nth-child(2) { min-width:100px; }
+.admin-header span:nth-child(3) { flex:1; }
+.admin-header span:nth-child(4) { min-width:70px; text-align:right; }
+.admin-header span:last-child { min-width:80px; text-align:center; }
+
+/* ===== CTA FINALE ===== */
+#scene-11 .cta-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+#scene-11 .cta-logo {
+  font-size:clamp(44px,9vw,88px); font-weight:800; letter-spacing:-0.04em;
+  background:linear-gradient(135deg,#fff 40%,var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+#scene-11 .cta-tagline { font-size:clamp(15px,2.2vw,20px); color:rgba(255,255,255,0.65); font-weight:300; letter-spacing:0.1em; }
+#scene-11 .cta-button {
+  margin-top:10px; padding:18px 44px; background:var(--accent); color:#000; border:none; border-radius:10px;
+  font-size:17px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; font-family:'Inter',sans-serif;
+  animation:pulse 2s ease-in-out infinite; box-shadow:0 0 30px rgba(var(--accent-rgb),0.3);
+}
+#scene-11 .cta-url { font-size:13px; color:rgba(255,255,255,0.35); letter-spacing:0.15em; }
+
+/* ===== SPLASH ===== */
+#splash {
+  position:fixed; inset:0; z-index:500; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px;
+  transition:opacity 0.5s ease;
+}
+#splash.hidden { opacity:0; pointer-events:none; }
+#splash .splash-logo {
+  font-size:clamp(32px,7vw,64px); font-weight:800; letter-spacing:-0.04em;
+  background:linear-gradient(135deg,#fff 40%,var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+#splash .play-btn {
+  width:76px; height:76px; border-radius:50%; background:var(--accent); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 40px rgba(var(--accent-rgb),0.4); transition:transform 0.3s;
+}
+#splash .play-btn:hover { transform:scale(1.1); }
+#splash .play-btn svg { width:26px; height:26px; fill:#000; margin-left:4px; }
+#splash .splash-text { font-size:13px; color:rgba(255,255,255,0.35); letter-spacing:0.25em; text-transform:uppercase; }
+
+/* ===== CONTROLS ===== */
+#sound-toggle {
+  position:fixed; bottom:18px; left:18px; z-index:100;
+  width:38px; height:38px; border-radius:50%;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  color:#aaa; font-size:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.3s; opacity:0; pointer-events:none;
+}
+#sound-toggle.visible { opacity:1; pointer-events:auto; }
+#sound-toggle:hover { background:rgba(255,255,255,0.1); }
+
+#replay-btn {
+  position:fixed; bottom:18px; right:18px; z-index:100;
+  padding:10px 22px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px; color:#ccc; font-size:12px; font-weight:600;
+  letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-family:'Inter',sans-serif;
+  opacity:0; pointer-events:none; transition:opacity 0.5s ease, background 0.3s;
+}
+#replay-btn.visible { opacity:1; pointer-events:auto; }
+#replay-btn:hover { background:rgba(255,255,255,0.1); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px) {
+  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+  .flip-grid { grid-template-columns:repeat(2,1fr); }
+  .orbit-wrap { width:220px; height:220px; }
+  .orbit-item { --orbit-r:90px !important; width:42px; height:42px; margin:-21px 0 0 -21px; font-size:8px; }
+  .orbit-center { width:60px; height:60px; font-size:9px; }
+  .booking-card .form-row { flex-direction:column; }
+  .payment-split { flex-direction:column; }
+  .planning-label { width:65px; font-size:10px; }
+  .admin-row { font-size:10px; gap:6px; padding:10px 10px; }
+  .admin-ref { min-width:80px; font-size:9px; }
+  .admin-name { min-width:60px; }
+  .admin-exp { display:none; }
+  .admin-date { min-width:50px; }
+  .admin-status { min-width:65px; font-size:9px; padding:3px 6px; }
+  .admin-header span:nth-child(3) { display:none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div id="progress-bar"></div>
+
+<div class="scene-container">
+
+  <!-- SCENE 0 — Cold Open -->
+  <div class="scene" id="scene-0">
+    <div class="scene-content">
+      <div class="logo-wrap">
+        <div class="logo-text" data-anim="scaleIn">Snow<br>Adventure</div>
+        <div class="tagline-tw" id="tagline-tw"></div>
+        <div class="location-tag" data-anim="fadeUp">Foppolo — Alpi Orobie Bergamasche</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 1 — Booking Engine -->
+  <div class="scene" id="scene-1">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Prenotazione Online</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Prenota in 30 Secondi</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Calendario real-time, slot disponibili, conferma istantanea</p>
+      <div class="booking-card glass" data-anim="fadeUp">
+        <div class="card-tag">Orobic Sunset Tour — SA-20250215-X8F2</div>
+        <div class="form-row">
+          <div class="form-field" id="bf-date">Seleziona data...</div>
+          <div class="form-field" id="bf-guests">2 ospiti</div>
+        </div>
+        <div class="form-row">
+          <div class="form-field" id="bf-time">17:00</div>
+          <div class="form-field" id="bf-exp">Sunset Tour</div>
+        </div>
+        <button class="book-btn" id="book-btn">Prenota Ora — €150</button>
+        <div class="counter-line"><strong id="counter-bookings">0</strong> prenotazioni questa stagione</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 2 — Calendario & Disponibilità -->
+  <div class="scene" id="scene-2">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Calendario Smart</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Gestione Slot & Slitte</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Crea slot in bulk, blocca date, monitora disponibilita per esperienza</p>
+      <div class="planning-grid glass" style="padding:20px;border-radius:16px" data-anim="fadeUp">
+        <div class="planning-header">
+          <span style="width:90px"></span>
+          <span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+        </div>
+        <div class="planning-row"><div class="planning-label">Sunset 17:00</div><div class="planning-bar-wrap"><div class="planning-bar" style="left:57%;width:43%;background:rgba(var(--accent-rgb),0.6)"><span class="bar-label">4/6 slitte</span></div></div></div>
+        <div class="planning-row"><div class="planning-label">Night 19:00</div><div class="planning-bar-wrap"><div class="planning-bar" style="left:28%;width:42%;background:rgba(var(--accent-rgb),0.45)"><span class="bar-label">3/6 slitte</span></div></div></div>
+        <div class="planning-row"><div class="planning-label">Night 20:00</div><div class="planning-bar-wrap"><div class="planning-bar" style="left:70%;width:30%;background:rgba(255,80,80,0.4)"><span class="bar-label">SOLD OUT</span></div></div></div>
+        <div class="planning-row"><div class="planning-label">Freeride</div><div class="planning-bar-wrap"><div class="planning-bar" style="left:14%;width:28%;background:rgba(200,200,255,0.25)"><span class="bar-label">Privato</span></div></div></div>
+        <div class="planning-row"><div class="planning-label">Bloccato</div><div class="planning-bar-wrap"><div class="planning-bar" style="left:0%;width:100%;background:rgba(255,255,255,0.06)"><span class="bar-label" style="color:#555">Meteo avverso</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 — Pagamenti Multi-Gateway -->
+  <div class="scene" id="scene-3">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">3 Gateway di Pagamento</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Stripe · PayPal · Satispay</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Webhook automatici, conferma istantanea, email di ricevuta</p>
+      <div class="payment-split" data-anim="fadeUp">
+        <div class="payment-right">
+          <div class="pay-method" id="pm-stripe"><div class="pay-icon stripe">S</div><div><div class="pay-name">Stripe</div><div class="pay-sub">Carte di credito</div></div></div>
+          <div class="pay-method" id="pm-paypal"><div class="pay-icon paypal">P</div><div><div class="pay-name">PayPal</div><div class="pay-sub">Checkout rapido</div></div></div>
+          <div class="pay-method" id="pm-satispay"><div class="pay-icon satispay">$</div><div><div class="pay-name">Satispay</div><div class="pay-sub">Pagamento mobile</div></div></div>
+        </div>
+        <div class="payment-left">
+          <div class="pay-summary glass">
+            <div class="pay-line"><span>Sunset Tour × 2 slitte</span><span>€300</span></div>
+            <div class="pay-line"><span>Gift Card SA-GC-A8X2F1QP</span><span style="color:var(--accent)">-€150</span></div>
+            <div class="pay-line"><span>Voucher SA-V-HOTEL10</span><span style="color:var(--accent)">-€15</span></div>
+            <div class="pay-total"><span>Totale</span><span id="pay-total-val">€0</span></div>
+            <div class="pay-status" id="pay-status">✓ Pagamento confermato — Webhook ricevuto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 4 — Gift Card & Voucher System -->
+  <div class="scene" id="scene-4">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Gift Card & Voucher</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Sconti che si Sommano</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Gift card digitali + codici voucher con stacking automatico</p>
+      <div class="flip-grid" data-anim="fadeUp">
+        <div class="flip-card" data-flip-delay="0"><div class="flip-card-inner"><div class="flip-face flip-front"><div class="flip-icon">🎁</div><div>Gift Card</div></div><div class="flip-face flip-back"><div class="flip-price">€150</div><div>SA-GC-...</div></div></div></div>
+        <div class="flip-card" data-flip-delay="150"><div class="flip-card-inner"><div class="flip-face flip-front"><div class="flip-icon">🏷️</div><div>Voucher %</div></div><div class="flip-face flip-back"><div class="flip-price">-10%</div><div>Hotel Partner</div></div></div></div>
+        <div class="flip-card" data-flip-delay="300"><div class="flip-card-inner"><div class="flip-face flip-front"><div class="flip-icon">🌅</div><div>Sunset</div></div><div class="flip-face flip-back"><div class="flip-price">€150</div><div>Exp-Specific</div></div></div></div>
+        <div class="flip-card" data-flip-delay="450"><div class="flip-card-inner"><div class="flip-face flip-front"><div class="flip-icon">🌙</div><div>Night</div></div><div class="flip-face flip-back"><div class="flip-price">€170</div><div>Exp-Specific</div></div></div></div>
+        <div class="flip-card" data-flip-delay="600"><div class="flip-card-inner"><div class="flip-face flip-front"><div class="flip-icon">💰</div><div>Fisso</div></div><div class="flip-face flip-back"><div class="flip-price">-€30</div><div>Sconto fisso</div></div></div></div>
+        <div class="flip-card" data-flip-delay="750"><div class="flip-card-inner"><div class="flip-face flip-front"><div class="flip-icon">♾️</div><div>Multi-uso</div></div><div class="flip-face flip-back"><div class="flip-price">∞</div><div>Max uses</div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 5 — Conferma & Email Automatiche -->
+  <div class="scene" id="scene-5">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Conferma Automatica</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Booking → Email → Done</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Email SMTP con dettagli prenotazione, gift card, e punto d'incontro</p>
+      <div class="guest-card glass" data-anim="fadeUp">
+        <div class="scan-line" id="scan-line"></div>
+        <div class="gc-header">
+          <div class="gc-avatar">MC</div>
+          <div><div class="gc-name">Marco Colombo</div><div class="gc-email">SA-20250215-X8F2</div></div>
+        </div>
+        <div class="gc-row"><span class="gc-label">Esperienza</span><span class="gc-val">Sunset Tour</span></div>
+        <div class="gc-row"><span class="gc-label">Data & Ora</span><span class="gc-val">15 Feb — 17:00</span></div>
+        <div class="gc-row"><span class="gc-label">Slitte</span><span class="gc-val">2 (4 persone)</span></div>
+        <div class="gc-row"><span class="gc-label">Pagamento</span><span class="gc-val">Stripe ✓</span></div>
+        <div class="gc-row"><span class="gc-label">Punto Incontro</span><span class="gc-val">Baita Belfud, Foppolo</span></div>
+        <div class="gc-badge" id="gc-badge">✓ Email di conferma inviata</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6 — Admin Dashboard -->
+  <div class="scene" id="scene-6">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Pannello Admin</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Dashboard in Tempo Reale</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Prenotazioni, revenue, gift card attive, messaggi non letti</p>
+      <div class="kpi-grid" data-anim="fadeUp">
+        <div class="kpi-card glass-sm">
+          <div class="kpi-value" id="kpi-today">0</div>
+          <div class="kpi-label">Oggi</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar" data-target-w="70%"></div></div>
+        </div>
+        <div class="kpi-card glass-sm">
+          <div class="kpi-value" id="kpi-revenue">0</div>
+          <div class="kpi-label">Revenue</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar" data-target-w="88%"></div></div>
+        </div>
+        <div class="kpi-card glass-sm">
+          <div class="kpi-value" id="kpi-gc">0</div>
+          <div class="kpi-label">Gift Card</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar" data-target-w="55%"></div></div>
+        </div>
+        <div class="kpi-card glass-sm">
+          <div class="kpi-value" id="kpi-msgs">0</div>
+          <div class="kpi-label">Messaggi</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar" data-target-w="30%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 7 — Revenue Chart -->
+  <div class="scene" id="scene-7">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Analytics</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Stagione da Record</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Revenue tracking con sconti gift card e voucher contabilizzati</p>
+      <div class="chart-wrap" data-anim="fadeUp">
+        <svg viewBox="0 0 540 190" preserveAspectRatio="xMidYMid meet">
+          <defs><linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(200,230,53,0.25)"/><stop offset="100%" stop-color="rgba(200,230,53,0)"/></linearGradient></defs>
+          <line x1="40" y1="30" x2="520" y2="30" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="40" y1="70" x2="520" y2="70" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="40" y1="110" x2="520" y2="110" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="40" y1="150" x2="520" y2="150" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="40" y1="175" x2="520" y2="175" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          <text x="40" y="188" fill="#444" font-size="9" font-family="Inter">Dic</text>
+          <text x="140" y="188" fill="#444" font-size="9" font-family="Inter">Gen</text>
+          <text x="250" y="188" fill="#444" font-size="9" font-family="Inter">Feb</text>
+          <text x="360" y="188" fill="#444" font-size="9" font-family="Inter">Mar</text>
+          <text x="460" y="188" fill="#444" font-size="9" font-family="Inter">Apr</text>
+          <path class="chart-area" id="chart-area" d="M40,165 L120,145 L200,115 L280,90 L360,55 L440,38 L520,25 L520,175 L40,175 Z" fill="url(#chartGrad)"/>
+          <path class="chart-line" id="chart-line" d="M40,165 L120,145 L200,115 L280,90 L360,55 L440,38 L520,25"/>
+          <circle cx="40" cy="165" r="3" fill="var(--accent)" opacity="0.5"/>
+          <circle cx="520" cy="25" r="4" fill="var(--accent)"/>
+        </svg>
+        <div class="chart-price-tag" id="chart-tag">€0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 8 — Hotel Partner & Voucher -->
+  <div class="scene" id="scene-8">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Hotel Convenzionati</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">-10% Automatico</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Voucher admin-managed per hotel partner con scadenza e usi limitati</p>
+      <div class="invoice-card glass" data-anim="fadeUp">
+        <div class="inv-header"><div class="inv-logo">Snow Adventure</div><div class="inv-num">SA-V-HOTEL10</div></div>
+        <div class="inv-row" data-inv-delay="0"><span>Sunset Tour × 2</span><span>€300</span></div>
+        <div class="inv-row" data-inv-delay="150"><span>Voucher -10%</span><span style="color:var(--accent)">-€30</span></div>
+        <div class="inv-row" data-inv-delay="300"><span>Night Tour × 1</span><span>€170</span></div>
+        <div class="inv-row" data-inv-delay="450"><span>Voucher -10%</span><span style="color:var(--accent)">-€17</span></div>
+        <div class="inv-total" id="inv-total"><span>Totale</span><span id="inv-total-val">€0</span></div>
+        <div class="inv-badge" id="inv-badge">✓ Villa Carona Hotel & Spa — Uso 14/50</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 9 — Servizi Orbit -->
+  <div class="scene" id="scene-9">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Ecosistema Completo</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Tutto in Un Sistema</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Booking, pagamenti, gift card, gallery, email — tutto integrato</p>
+      <div class="orbit-wrap" data-anim="scaleIn">
+        <div class="orbit-ring"></div>
+        <div class="orbit-center">SNOW<br>API</div>
+        <div class="orbit-item" style="animation-delay:0s;">Booking</div>
+        <div class="orbit-item" style="animation-delay:-2s;">Payments</div>
+        <div class="orbit-item" style="animation-delay:-4s;">Gift Card</div>
+        <div class="orbit-item" style="animation-delay:-6s;">Gallery</div>
+        <div class="orbit-item" style="animation-delay:-8s;">Admin</div>
+        <div class="orbit-item" style="animation-delay:-10s;">Email</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 10 — Admin Gestione Prenotazioni -->
+  <div class="scene" id="scene-10">
+    <div class="scene-content">
+      <p class="scene-tag" data-anim="fadeUp">Pannello Admin</p>
+      <h2 class="headline" data-anim="fadeUp"><span class="gradient-text">Gestione Prenotazioni</span></h2>
+      <p class="subheadline" data-anim="fadeUp">Filtra per stato, cambia status, monitora ogni booking in tempo reale</p>
+      <div class="admin-table glass" data-anim="fadeUp">
+        <div class="admin-header"><span>Ref</span><span>Cliente</span><span>Esperienza</span><span>Data</span><span>Status</span></div>
+        <div class="admin-row" data-admin-delay="0">
+          <span class="admin-ref">SA-0215-X8F2</span><span class="admin-name">Marco C.</span><span class="admin-exp">Sunset Tour</span><span class="admin-date">15 Feb</span><span class="admin-status confirmed">Confirmed</span>
+        </div>
+        <div class="admin-row" data-admin-delay="100">
+          <span class="admin-ref">SA-0216-P3K1</span><span class="admin-name">Laura B.</span><span class="admin-exp">Night Tour</span><span class="admin-date">16 Feb</span><span class="admin-status pending" id="admin-pending">Pending</span>
+        </div>
+        <div class="admin-row" data-admin-delay="200">
+          <span class="admin-ref">SA-0217-Q9M4</span><span class="admin-name">Thomas H.</span><span class="admin-exp">Sunset Tour</span><span class="admin-date">17 Feb</span><span class="admin-status completed">Completed</span>
+        </div>
+        <div class="admin-row" data-admin-delay="300">
+          <span class="admin-ref">SA-0218-J7W2</span><span class="admin-name">Sara M.</span><span class="admin-exp">Freeride</span><span class="admin-date">18 Feb</span><span class="admin-status cancelled">Cancelled</span>
+        </div>
+        <div class="admin-row" data-admin-delay="400">
+          <span class="admin-ref">SA-0219-L5N8</span><span class="admin-name">Giulia R.</span><span class="admin-exp">Night Tour</span><span class="admin-date">19 Feb</span><span class="admin-status confirmed">Confirmed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 11 — CTA Finale -->
+  <div class="scene" id="scene-11">
+    <div class="scene-content">
+      <div class="cta-wrap">
+        <div class="cta-logo" data-anim="scaleIn">Snow<br>Adventure</div>
+        <div class="cta-tagline" data-anim="fadeUp">Piattaforma per noleggio motoslitte — Foppolo</div>
+        <button class="cta-button" data-anim="fadeUp" onclick="window.open('https://snowadventure.it','_blank')">Prenota Ora</button>
+        <div class="cta-url" data-anim="fadeUp">snowadventure.it</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">Snow<br>Adventure</div>
+  <button class="play-btn" id="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg></button>
+  <div class="splash-text">Guarda lo Spot</div>
+</div>
+
+<button id="sound-toggle">&#9835;</button>
+<button id="replay-btn">&#8635; Replay</button>
+
+<script>
+// ========== AUDIO ENGINE ==========
+class AudioEngine {
+  constructor() {
+    this.ctx = null; this.master = null; this.bgGain = null; this.beatGain = null;
+    this.bassGain = null; this.sfxGain = null; this.reverbGain = null;
+    this.compressor = null; this.convolver = null;
+    this.muted = false; this.playing = false; this.step = 0; this.bpm = 122;
+    this.stepInterval = null; this.section = 0; this.totalSteps = 0; this.sectionLength = 64;
+    this._padOscs = [];
+  }
+
+  init() {
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.compressor = this.ctx.createDynamicsCompressor();
+    this.compressor.threshold.value = -20; this.compressor.knee.value = 10;
+    this.compressor.ratio.value = 4; this.compressor.attack.value = 0.003; this.compressor.release.value = 0.15;
+    this.compressor.connect(this.ctx.destination);
+    this.master = this.ctx.createGain(); this.master.gain.value = 0.6; this.master.connect(this.compressor);
+    this.bgGain = this.ctx.createGain(); this.bgGain.gain.value = 0.12; this.bgGain.connect(this.master);
+    this.beatGain = this.ctx.createGain(); this.beatGain.gain.value = 0.55; this.beatGain.connect(this.master);
+    this.bassGain = this.ctx.createGain(); this.bassGain.gain.value = 0.4; this.bassGain.connect(this.master);
+    this.sfxGain = this.ctx.createGain(); this.sfxGain.gain.value = 0.45; this.sfxGain.connect(this.master);
+    this.reverbGain = this.ctx.createGain(); this.reverbGain.gain.value = 0.25; this.reverbGain.connect(this.master);
+    this.convolver = this.ctx.createConvolver();
+    this.convolver.buffer = this._createReverb(2.5, 0.8);
+    this.convolver.connect(this.reverbGain);
+    this.padReverbSend = this.ctx.createGain(); this.padReverbSend.gain.value = 0.4; this.padReverbSend.connect(this.convolver);
+  }
+
+  _createReverb(dur, decay) {
+    const len = this.ctx.sampleRate * dur;
+    const buf = this.ctx.createBuffer(2, len, this.ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/len, decay); }
+    return buf;
+  }
+
+  _chordForSection(s) {
+    return [[220,261.63,329.63],[174.61,220,261.63],[261.63,329.63,392],[196,246.94,293.66]][s%4];
+  }
+  _bassNote(s) { return [110,87.31,130.81,98][s%4]; }
+  _melodyScale(s) {
+    return [[220,261.63,293.66,329.63,392],[174.61,196,220,261.63,293.66],[261.63,293.66,329.63,392,440],[196,220,246.94,293.66,329.63]][s%4];
+  }
+
+  startMusic(totalMs) {
+    if (!this.ctx) return;
+    this.playing = true; this.step = 0;
+    const msPerStep = (60000/this.bpm)/4;
+    this.sectionLength = Math.floor(Math.ceil(totalMs/msPerStep)/4);
+    this.totalSteps = this.sectionLength * 4;
+    this._startPad(0);
+    this.stepInterval = setInterval(() => {
+      if (!this.playing) return;
+      const ns = Math.min(3, Math.floor(this.step/this.sectionLength));
+      if (ns !== this.section) { this.section = ns; this._startPad(ns); this._playFill(); }
+      this._playStep(this.step, this.section);
+      this.step++;
+      if (this.step >= this.totalSteps) this.stopMusic();
+    }, msPerStep);
+  }
+
+  stopMusic() { this.playing = false; if (this.stepInterval) clearInterval(this.stepInterval); this._stopPad(); }
+
+  _playStep(step, sec) {
+    const s = step % 16;
+    const kicks = [[0,8],[0,4,8,12],[0,3,6,8,11],[0,2,4,6,8,10,12,14]];
+    if (kicks[sec].includes(s)) this._kick();
+    const hats = [[0,4,8,12],[0,2,4,6,8,10,12,14],[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]];
+    if (hats[sec].includes(s)) this._hat(sec>=2&&s%2===1?0.3:0.7);
+    if (sec>=1&&(s===4||s===12)) this._clap();
+    if (sec>=1) { const bp=[[],[0,6,10],[0,3,6,8,11],[0,2,4,6,8,10,12,14]]; if(bp[sec].includes(s)) this._bass(this._bassNote(this.section)); }
+    if (sec>=1) { const mp=[[],[0,8],[0,4,8,12],[0,2,4,6,8,10,12,14]]; if(mp[sec].includes(s)){ const sc=this._melodyScale(this.section); this._melody(sc[Math.floor(Math.random()*sc.length)]); }}
+    if (sec>=2&&s===0) this._stab();
+  }
+
+  _kick() { const t=this.ctx.currentTime,o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(40,t+0.08); g.gain.setValueAtTime(0.9,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.25); o.connect(g); g.connect(this.beatGain); o.start(t); o.stop(t+0.25); }
+  _hat(v) { const t=this.ctx.currentTime,n=this.ctx.sampleRate*0.04,b=this.ctx.createBuffer(1,n,this.ctx.sampleRate),d=b.getChannelData(0); for(let i=0;i<n;i++)d[i]=Math.random()*2-1; const s=this.ctx.createBufferSource(); s.buffer=b; const h=this.ctx.createBiquadFilter(); h.type='highpass'; h.frequency.value=7000; const g=this.ctx.createGain(); g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.05); s.connect(h); h.connect(g); g.connect(this.beatGain); s.start(t); }
+  _clap() { const t=this.ctx.currentTime,n=this.ctx.sampleRate*0.08,b=this.ctx.createBuffer(1,n,this.ctx.sampleRate),d=b.getChannelData(0); for(let i=0;i<n;i++)d[i]=Math.random()*2-1; const s=this.ctx.createBufferSource(); s.buffer=b; const f=this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=2500; f.Q.value=1.5; const g=this.ctx.createGain(); g.gain.setValueAtTime(0.6,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.12); s.connect(f); f.connect(g); g.connect(this.beatGain); s.start(t); }
+  _bass(freq) { const t=this.ctx.currentTime,o=this.ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq; const l=this.ctx.createBiquadFilter(); l.type='lowpass'; l.frequency.value=600; l.Q.value=2.5; const g=this.ctx.createGain(); g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.15); o.connect(l); l.connect(g); g.connect(this.bassGain); o.start(t); o.stop(t+0.15); }
+  _melody(freq) { const t=this.ctx.currentTime,o=this.ctx.createOscillator(); o.type='triangle'; o.frequency.value=freq; const l=this.ctx.createBiquadFilter(); l.type='lowpass'; l.frequency.value=3000; const g=this.ctx.createGain(); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.3); o.connect(l); l.connect(g); g.connect(this.bgGain); g.connect(this.convolver); o.start(t); o.stop(t+0.3); }
+  _stab() { const t=this.ctx.currentTime; this._chordForSection(this.section).forEach(f=>{ const o=this.ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f; const l=this.ctx.createBiquadFilter(); l.type='lowpass'; l.frequency.setValueAtTime(4000,t); l.frequency.exponentialRampToValueAtTime(800,t+0.2); const g=this.ctx.createGain(); g.gain.setValueAtTime(0.15,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2); o.connect(l); l.connect(g); g.connect(this.beatGain); o.start(t); o.stop(t+0.2); }); }
+
+  _startPad(sec) {
+    this._stopPad(); const t=this.ctx.currentTime;
+    this._chordForSection(sec).forEach(f=>{ const o=this.ctx.createOscillator(),o2=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.value=f; o2.type='triangle'; o2.frequency.value=f*1.003; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.08,t+1); o.connect(g); o2.connect(g); g.connect(this.bgGain); g.connect(this.padReverbSend); o.start(t); o2.start(t); this._padOscs.push({osc:o,osc2:o2,gain:g}); });
+  }
+  _stopPad() { const t=this.ctx?this.ctx.currentTime:0; this._padOscs.forEach(p=>{ try{ p.gain.gain.linearRampToValueAtTime(0,t+0.5); p.osc.stop(t+0.6); p.osc2.stop(t+0.6); }catch(e){} }); this._padOscs=[]; }
+
+  _playFill() {
+    const t=this.ctx.currentTime;
+    for(let i=0;i<8;i++){ const w=t+i*0.05,n=this.ctx.sampleRate*0.05,b=this.ctx.createBuffer(1,n,this.ctx.sampleRate),d=b.getChannelData(0); for(let j=0;j<n;j++)d[j]=Math.random()*2-1; const s=this.ctx.createBufferSource(); s.buffer=b; const f=this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=3000; const g=this.ctx.createGain(); g.gain.setValueAtTime(0.3+i*0.05,w); g.gain.exponentialRampToValueAtTime(0.001,w+0.06); s.connect(f); f.connect(g); g.connect(this.beatGain); s.start(w); }
+    const r=this.ctx.createOscillator(); r.type='sawtooth'; r.frequency.setValueAtTime(200,t); r.frequency.exponentialRampToValueAtTime(2000,t+0.4); const rg=this.ctx.createGain(); rg.gain.setValueAtTime(0.1,t); rg.gain.exponentialRampToValueAtTime(0.001,t+0.45); r.connect(rg); rg.connect(this.sfxGain); r.start(t); r.stop(t+0.45);
+  }
+
+  // SFX
+  playWhoosh(idx) { if(!this.ctx)return; const t=this.ctx.currentTime,n=this.ctx.sampleRate*0.3,b=this.ctx.createBuffer(1,n,this.ctx.sampleRate),d=b.getChannelData(0); for(let i=0;i<n;i++)d[i]=Math.random()*2-1; const s=this.ctx.createBufferSource(); s.buffer=b; const f=this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.setValueAtTime(500,t); f.frequency.exponentialRampToValueAtTime(3000+idx*200,t+0.15); f.frequency.exponentialRampToValueAtTime(500,t+0.3); f.Q.value=1; const g=this.ctx.createGain(); g.gain.setValueAtTime(0.3,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.3); s.connect(f); f.connect(g); g.connect(this.sfxGain); s.start(t); const o=this.ctx.createOscillator(); o.type='sine'; o.frequency.value=300+idx*50; const og=this.ctx.createGain(); og.gain.setValueAtTime(0.1,t); og.gain.exponentialRampToValueAtTime(0.001,t+0.2); o.connect(og); og.connect(this.sfxGain); o.start(t); o.stop(t+0.2); }
+  playLogoReveal() { if(!this.ctx)return; const t=this.ctx.currentTime; [261.63,329.63,392,523.25].forEach((f,i)=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0,t+i*0.08); g.gain.linearRampToValueAtTime(0.2,t+i*0.08+0.05); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.08+0.5); o.connect(g); g.connect(this.sfxGain); g.connect(this.convolver); o.start(t+i*0.08); o.stop(t+i*0.08+0.5); }); }
+  playPop(p=1) { if(!this.ctx)return; const t=this.ctx.currentTime,o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(800*p,t); o.frequency.exponentialRampToValueAtTime(400*p,t+0.06); g.gain.setValueAtTime(0.3,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.08); o.connect(g); g.connect(this.sfxGain); o.start(t); o.stop(t+0.08); }
+  playConfirm() { if(!this.ctx)return; const t=this.ctx.currentTime; [392,523.25,659.25].forEach((f,i)=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='triangle'; o.frequency.value=f; g.gain.setValueAtTime(0,t+i*0.07); g.gain.linearRampToValueAtTime(0.2,t+i*0.07+0.03); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.07+0.3); o.connect(g); g.connect(this.sfxGain); o.start(t+i*0.07); o.stop(t+i*0.07+0.3); }); }
+  playShimmer() { if(!this.ctx)return; const t=this.ctx.currentTime; for(let i=0;i<6;i++){ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.value=800+i*200+Math.random()*100; g.gain.setValueAtTime(0,t+i*0.05); g.gain.linearRampToValueAtTime(0.08,t+i*0.05+0.03); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.05+0.4); o.connect(g); g.connect(this.sfxGain); g.connect(this.convolver); o.start(t+i*0.05); o.stop(t+i*0.05+0.4); } }
+  playDataRise() { if(!this.ctx)return; const t=this.ctx.currentTime,o=this.ctx.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(200,t); o.frequency.exponentialRampToValueAtTime(1200,t+0.8); const l=this.ctx.createBiquadFilter(); l.type='lowpass'; l.frequency.value=2000; const g=this.ctx.createGain(); g.gain.setValueAtTime(0.1,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.9); o.connect(l); l.connect(g); g.connect(this.sfxGain); o.start(t); o.stop(t+0.9); }
+  playStamp() { if(!this.ctx)return; const t=this.ctx.currentTime; const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(80,t); o.frequency.exponentialRampToValueAtTime(30,t+0.15); g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2); o.connect(g); g.connect(this.sfxGain); o.start(t); o.stop(t+0.2); const n=this.ctx.sampleRate*0.03,b=this.ctx.createBuffer(1,n,this.ctx.sampleRate),d=b.getChannelData(0); for(let i=0;i<n;i++)d[i]=Math.random()*2-1; const s=this.ctx.createBufferSource(); s.buffer=b; const gn=this.ctx.createGain(); gn.gain.setValueAtTime(0.4,t); gn.gain.exponentialRampToValueAtTime(0.001,t+0.04); s.connect(gn); gn.connect(this.sfxGain); s.start(t); }
+  playScanBeep() { if(!this.ctx)return; const t=this.ctx.currentTime,o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='square'; o.frequency.value=1800; g.gain.setValueAtTime(0.2,t); g.gain.setValueAtTime(0.2,t+0.08); g.gain.exponentialRampToValueAtTime(0.001,t+0.1); o.connect(g); g.connect(this.sfxGain); o.start(t); o.stop(t+0.1); }
+  playFinale() { if(!this.ctx)return; const t=this.ctx.currentTime; [261.63,329.63,392,523.25].forEach(f=>{ const o=this.ctx.createOscillator(),o2=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sine'; o.frequency.value=f; o2.type='triangle'; o2.frequency.value=f*1.002; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.15,t+0.1); g.gain.linearRampToValueAtTime(0.15,t+1.5); g.gain.exponentialRampToValueAtTime(0.001,t+3); o.connect(g); o2.connect(g); g.connect(this.sfxGain); g.connect(this.convolver); o.start(t); o2.start(t); o.stop(t+3); o2.stop(t+3); }); }
+
+  toggleMute() { this.muted=!this.muted; if(this.master) this.master.gain.linearRampToValueAtTime(this.muted?0:0.6,this.ctx.currentTime+0.2); return this.muted; }
+}
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+  let W,H,particles=[]; const isMobile=window.innerWidth<768, COUNT=isMobile?30:50; let burstMode=false;
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; } resize(); window.addEventListener('resize',resize);
+  class P { constructor(){this.reset()} reset(){this.x=Math.random()*W;this.y=H+Math.random()*100;this.size=Math.random()*2.5+0.5;this.speedY=-(Math.random()*0.5+0.2);this.speedX=(Math.random()-0.5)*0.3;this.opacity=Math.random()*0.3+0.1;this.isAccent=Math.random()>0.7;} update(){const m=burstMode?2.5:1;this.y+=this.speedY*m;this.x+=this.speedX+Math.sin(this.y*0.005)*0.2;if(this.y<-10)this.reset();} draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=this.isAccent?`rgba(200,230,53,${this.opacity})`:`rgba(255,255,255,${this.opacity})`;ctx.fill();} }
+  for(let i=0;i<COUNT;i++){const p=new P();p.y=Math.random()*H;particles.push(p);}
+  (function anim(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(anim)})();
+  return{burst(){burstMode=true;for(let i=0;i<20;i++)particles.push(new P());}};
+}
+
+// ========== UTILITIES ==========
+function countUp(el,target,duration,prefix='',suffix='') {
+  const start=performance.now();
+  function ease(t){return 1-Math.pow(1-t,4);}
+  function tick(now){ const p=Math.min((now-start)/duration,1); const v=Math.round((target)*ease(p)); el.textContent=prefix+v.toLocaleString('it-IT')+suffix; if(p<1)requestAnimationFrame(tick); }
+  requestAnimationFrame(tick);
+}
+function typeWriter(el,text,speed,cb) {
+  let i=0; el.style.width='auto'; el.style.display='inline-block';
+  (function type(){if(i<=text.length){el.textContent=text.substring(0,i);i++;setTimeout(type,speed);}else if(cb)cb();})();
+}
+
+// ========== TIMELINE ==========
+class Timeline {
+  constructor(scenes){this.scenes=scenes;this.currentScene=-1;this.timeouts=[];this.totalDuration=scenes.reduce((s,sc)=>s+sc.duration,0);}
+  start() {
+    let elapsed=0;
+    this.scenes.forEach((sc,i)=>{this.timeouts.push(setTimeout(()=>this._activate(i,sc),elapsed));elapsed+=sc.duration;});
+    const bar=document.getElementById('progress-bar'),st=Date.now(),tot=this.totalDuration;
+    (function upd(){const pct=Math.min(((Date.now()-st)/tot)*100,100);bar.style.width=pct+'%';if(pct<100)requestAnimationFrame(upd);})();
+  }
+  _activate(idx,sc) {
+    if(this.currentScene>=0){const prev=document.getElementById('scene-'+this.currentScene);if(prev)prev.classList.remove('active');}
+    const el=document.getElementById('scene-'+idx);
+    if(el){el.classList.add('active');el.querySelectorAll('[data-anim]').forEach((a,i)=>setTimeout(()=>a.classList.add('animate'),i*100));}
+    this.currentScene=idx; if(sc.setup)sc.setup(idx);
+  }
+  replay() {
+    this.timeouts.forEach(t=>clearTimeout(t)); this.timeouts=[]; this.currentScene=-1;
+    document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('[data-anim]').forEach(a=>a.classList.remove('animate'));
+    document.getElementById('progress-bar').style.width='0%';
+    document.getElementById('replay-btn').classList.remove('visible');
+    document.querySelectorAll('.planning-bar').forEach(b=>b.classList.remove('animate'));
+    document.querySelectorAll('.flip-card').forEach(c=>c.classList.remove('flipped'));
+    document.querySelectorAll('.admin-row').forEach(r=>r.classList.remove('animate'));
+    const ap=document.getElementById('admin-pending');if(ap){ap.classList.remove('confirmed');ap.classList.add('pending');ap.textContent='Pending';}
+    document.querySelectorAll('.inv-row').forEach(r=>r.classList.remove('animate'));
+    ['inv-total','inv-badge','chart-line','chart-area','chart-tag'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('animate');});
+    document.querySelectorAll('.kpi-bar').forEach(b=>b.style.width='0%');
+    document.querySelectorAll('.pay-method').forEach(m=>m.classList.remove('active'));
+    const ps=document.getElementById('pay-status');if(ps)ps.classList.remove('show');
+    document.querySelectorAll('.form-field').forEach(f=>{f.classList.remove('filled');});
+    const tw=document.getElementById('tagline-tw');tw.textContent='';tw.style.width='0';
+    const sl=document.getElementById('scan-line');if(sl)sl.classList.remove('active');
+  }
+}
+
+// ========== MAIN ==========
+(function(){
+  const audio = new AudioEngine();
+  const particleSystem = initParticles();
+
+  const SCENES = [
+    // 0 — Cold Open (3s)
+    { duration:3000, setup(idx){
+      audio.playLogoReveal();
+      setTimeout(()=>typeWriter(document.getElementById('tagline-tw'),'Escursioni in Motoslitta',45),600);
+    }},
+    // 1 — Booking Engine (3.5s)
+    { duration:3500, setup(idx){
+      audio.playWhoosh(idx);
+      const fields=['bf-date','bf-guests','bf-time','bf-exp'];
+      const vals=['15 Febbraio 2025','2 ospiti','17:00','Sunset Tour'];
+      fields.forEach((id,i)=>setTimeout(()=>{const e=document.getElementById(id);e.textContent=vals[i];e.classList.add('filled');audio.playPop(1+i*0.15);},400+i*250));
+      setTimeout(()=>{countUp(document.getElementById('counter-bookings'),847,1800);audio.playDataRise();},1500);
+    }},
+    // 2 — Calendario & Disponibilita (3.5s)
+    { duration:3500, setup(idx){
+      audio.playWhoosh(idx);
+      document.querySelectorAll('#scene-2 .planning-bar').forEach((b,i)=>setTimeout(()=>{b.classList.add('animate');audio.playPop(0.8+i*0.1);},300+i*200));
+    }},
+    // 3 — Multi-Payment (4s)
+    { duration:4000, setup(idx){
+      audio.playWhoosh(idx);
+      const methods=['pm-stripe','pm-paypal','pm-satispay'];
+      methods.forEach((id,i)=>setTimeout(()=>{document.getElementById(id).classList.add('active');audio.playPop(1+i*0.2);},500+i*400));
+      setTimeout(()=>{countUp(document.getElementById('pay-total-val'),135,1000,'€');audio.playDataRise();},1800);
+      setTimeout(()=>{document.getElementById('pay-status').classList.add('show');audio.playConfirm();},2800);
+    }},
+    // 4 — Gift Card & Voucher (3.5s)
+    { duration:3500, setup(idx){
+      audio.playWhoosh(idx);
+      document.querySelectorAll('#scene-4 .flip-card').forEach(c=>{const d=parseInt(c.getAttribute('data-flip-delay')||0);setTimeout(()=>{c.classList.add('flipped');audio.playPop(1.2);},400+d);});
+    }},
+    // 5 — Conferma & Email (3.8s)
+    { duration:3800, setup(idx){
+      audio.playWhoosh(idx);
+      setTimeout(()=>{document.getElementById('scan-line').classList.add('active');audio.playScanBeep();},800);
+      setTimeout(()=>{audio.playStamp();},2000);
+    }},
+    // 6 — Admin Dashboard KPI (4s)
+    { duration:4000, setup(idx){
+      audio.playWhoosh(idx);
+      setTimeout(()=>{
+        countUp(document.getElementById('kpi-today'),12,1200);
+        countUp(document.getElementById('kpi-revenue'),18450,1500,'€');
+        countUp(document.getElementById('kpi-gc'),34,1000);
+        countUp(document.getElementById('kpi-msgs'),7,800);
+        audio.playDataRise();
+        document.querySelectorAll('#scene-6 .kpi-bar').forEach(b=>setTimeout(()=>b.style.width=b.getAttribute('data-target-w'),300));
+      },400);
+    }},
+    // 7 — Revenue Chart (3.8s)
+    { duration:3800, setup(idx){
+      audio.playWhoosh(idx);
+      setTimeout(()=>{
+        document.getElementById('chart-line').classList.add('animate');
+        document.getElementById('chart-area').classList.add('animate');
+        document.getElementById('chart-tag').classList.add('animate');
+        countUp(document.getElementById('chart-tag'),18450,1500,'€');
+        audio.playDataRise();
+      },400);
+    }},
+    // 8 — Hotel Partner & Voucher (3.5s)
+    { duration:3500, setup(idx){
+      audio.playWhoosh(idx);
+      document.querySelectorAll('#scene-8 .inv-row').forEach(r=>{const d=parseInt(r.getAttribute('data-inv-delay')||0);setTimeout(()=>{r.classList.add('animate');audio.playPop(1);},400+d);});
+      setTimeout(()=>{document.getElementById('inv-total').classList.add('animate');countUp(document.getElementById('inv-total-val'),423,800,'€');audio.playConfirm();},1200);
+      setTimeout(()=>{document.getElementById('inv-badge').classList.add('animate');audio.playStamp();},2000);
+    }},
+    // 9 — Orbit Servizi (3.5s)
+    { duration:3500, setup(idx){ audio.playWhoosh(idx); audio.playShimmer(); }},
+    // 10 — Admin Gestione Prenotazioni (4s)
+    { duration:4000, setup(idx){
+      audio.playWhoosh(idx);
+      document.querySelectorAll('#scene-10 .admin-row').forEach(r=>{const d=parseInt(r.getAttribute('data-admin-delay')||0);setTimeout(()=>{r.classList.add('animate');audio.playPop(0.9);},300+d);});
+      setTimeout(()=>{const p=document.getElementById('admin-pending');if(p){p.classList.remove('pending');p.classList.add('confirmed');p.textContent='Confirmed';audio.playConfirm();}},2500);
+    }},
+    // 11 — CTA Finale (5s)
+    { duration:5000, setup(idx){
+      audio.playFinale(); particleSystem.burst();
+      setTimeout(()=>document.getElementById('replay-btn').classList.add('visible'),3500);
+    }}
+  ];
+
+  const timeline = new Timeline(SCENES);
+
+  document.getElementById('play-btn').addEventListener('click',()=>{
+    audio.init();
+    const sp=document.getElementById('splash'); sp.classList.add('hidden'); setTimeout(()=>sp.style.display='none',500);
+    document.getElementById('sound-toggle').classList.add('visible');
+    audio.startMusic(timeline.totalDuration); timeline.start();
+  });
+
+  document.getElementById('sound-toggle').addEventListener('click',()=>{
+    const m=audio.toggleMute();
+    document.getElementById('sound-toggle').textContent=m?'X':'\u266B';
+    document.getElementById('sound-toggle').style.color=m?'#555':'#aaa';
+  });
+
+  document.getElementById('replay-btn').addEventListener('click',()=>{
+    audio.stopMusic(); timeline.replay();
+    setTimeout(()=>{audio.startMusic(timeline.totalDuration);timeline.start();},300);
+  });
+})();
+</script>
+</body>
+</html>

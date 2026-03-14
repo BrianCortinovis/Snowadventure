@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orobic Sunset Tour | Snow Adventure Foppolo</title>
+<meta name="description" content="Escursione al tramonto in motoslitta fino a 2.200m con aperitivo in quota nelle Alpi Orobie.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--lime:#c8e635;--dark:#050505}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#000}
+a{color:inherit;text-decoration:none}
+img,video{display:block;width:100%;height:100%;object-fit:cover}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+.nav.scrolled{background:rgba(0,0,0,.85);backdrop-filter:blur(20px);padding:14px 48px}
+.nav-logo img{height:56px;width:auto}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;transition:color .3s}
+.nav-links a:hover{color:#fff}
+.nav-cta{font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:12px 26px;background:var(--lime);color:#000;font-weight:600;transition:background .3s}
+.nav-cta:hover{background:#fff}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101}
+.nav-burger span{display:block;width:28px;height:2px;background:#fff;transition:all .3s}
+.mobile-menu{display:none;position:fixed;inset:0;background:#000;z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:24px;letter-spacing:.15em;text-transform:uppercase;color:#ccc}
+@media(max-width:900px){.nav-links{display:none}.nav-burger{display:flex}.nav{padding:20px 24px}}
+
+.hero{position:relative;height:100dvh;width:100%}
+.hero-media{position:absolute;inset:0}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,transparent 40%,rgba(5,5,5,1) 100%)}
+.hero-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:0 40px 64px;max-width:1440px;margin:0 auto}
+.tag{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--lime)}
+.hero h1{margin-top:8px;font-size:clamp(40px,8vw,88px);font-weight:700;line-height:.88}
+.price-row{margin-top:20px;display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+.price-big{font-size:clamp(32px,5vw,52px);font-weight:700;color:var(--lime)}
+.price-note{font-size:18px;color:#aaa}
+.hero-btns{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{padding:16px 36px;background:var(--lime);color:#000;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:background .3s}
+.btn-primary:hover{background:#fff}
+.btn-ghost{padding:16px 36px;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:15px;letter-spacing:.1em;text-transform:uppercase;transition:all .3s}
+.btn-ghost:hover{background:#fff;color:#000;border-color:#fff}
+@media(max-width:768px){.hero-content{padding:0 24px 48px}}
+
+.content{padding:80px 40px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:80px}
+.sidebar .label{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:8px}
+.sidebar .val{font-size:18px;color:#ccc;margin-bottom:28px}
+.sidebar .val.big{font-size:28px;font-weight:700;color:#fff}
+.main h2{font-size:22px;font-weight:300;color:#ddd;margin-bottom:28px}
+.main .body{font-size:19px;color:#ccc;line-height:1.85}
+.main .body p+p{margin-top:16px}
+.info-section{margin-top:48px}
+.info-section h3{font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:16px}
+.info-item{display:flex;gap:10px;font-size:19px;color:#ccc;line-height:1.7;margin-bottom:8px}
+.info-item .dot{color:var(--lime);margin-top:4px;font-size:8px}
+.divider{margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.05)}
+.divider p{font-size:19px;color:#ccc;line-height:1.7}
+.cta-row{margin-top:48px;display:flex;gap:12px;flex-wrap:wrap}
+@media(max-width:768px){.content{grid-template-columns:1fr;gap:40px;padding:60px 24px}}
+
+.footer{padding:80px 40px 40px;border-top:1px solid rgba(255,255,255,.04)}
+.footer-grid{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px}
+.footer .label{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
+.footer p,.footer a{font-size:17px;color:#aaa;line-height:1.8}
+.footer a:hover{color:#fff}
+.footer-logo{height:40px;width:auto;margin-bottom:16px}
+.footer-bottom{max-width:1440px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.04);text-align:center;font-size:14px;color:rgba(255,255,255,.15)}
+@media(max-width:768px){.footer{padding:60px 24px 32px}.footer-grid{grid-template-columns:1fr;gap:36px}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo"><img src="images/homepage_img_0.png" alt="Snow Adventure"></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="esperienze.html">Esperienze</a><a href="sunset.html">Sunset</a><a href="night.html">Night</a><a href="freeride.html">Freeride</a><a href="gallery.html">Gallery</a><a href="contatti.html">Contatti</a><a href="gift-card.html">Gift Card</a><a href="#" class="nav-cta" onclick="event.preventDefault();BWOpen('sunset')">Prenota</a>
+  </div>
+  <div class="nav-burger" onclick="document.getElementById('mobile').classList.toggle('open')"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobile">
+  <a href="index.html">Home</a><a href="esperienze.html">Esperienze</a><a href="sunset.html">Sunset</a><a href="night.html">Night</a><a href="freeride.html">Freeride</a><a href="gallery.html">Gallery</a><a href="contatti.html">Contatti</a><a href="gift-card.html">Gift Card</a>
+</div>
+
+<section class="hero">
+  <div class="hero-media">
+    <video autoplay muted loop playsinline poster="images/slitta-1_img_6.jpg">
+      <source src="videos/sunset_tour.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="tag">Durata 1.5 ore — Baita Belfud, Foppolo</span>
+    <h1>Orobic<br>Sunset Tour</h1>
+    <div class="price-row">
+      <span class="price-big">150€</span>
+      <span class="price-note">Include motoslitta per 2 persone e Aperitivo</span>
+    </div>
+    <div class="hero-btns">
+      <a href="#" class="btn-primary" onclick="event.preventDefault();BWOpen('sunset')">Prenota Ora</a>
+      <a href="gift-card.html" class="btn-ghost">Gift Card</a>
+    </div>
+  </div>
+</section>
+
+<div class="content">
+  <div class="sidebar">
+    <p class="label">Luogo</p>
+    <p class="val">Baita Belfud<br>SP2, 24010 Foppolo BG</p>
+    <p class="label">Durata</p>
+    <p class="val">1.5 ore</p>
+    <p class="label">Prezzo</p>
+    <p class="val big">150€</p>
+    <p class="price-note">Include motoslitta per 2 persone e Aperitivo</p>
+  </div>
+  <div class="main">
+    <h2>Di che cosa si tratta?</h2>
+    <div class="body">
+      <p>Scopri le montagne di Foppolo con un giro in motoslitta in provincia di Bergamo. Una guida esperta vi accompagnerà attraverso i magnifici paesaggi delle Alpi Orobie partendo da Foppolo e proseguendo il giro verso Carona.</p>
+      <p>Partendo dalla Baita Belfud per le 17:00 o 18:30, salirete con le motoslitte guidate da voi fino a 2.200 metri di altitudine per godervi il panorama mozzafiato delle Alpi al tramonto e scattare delle foto. Successivamente, raggiungerete un rifugio per fare un aperitivo in quota insieme alla guida e al resto del gruppo.</p>
+      <p>Le motoslitte possono accogliere fino a 2 persone. Per condurre una motoslitta è necessario aver compiuto 18 anni ed essere in possesso della patente di guida di categoria B. Non è obbligatorio guidare la motoslitta, è possibile prenotare l'escursione ed essere trasportati come passeggeri.</p>
+      <p>È consigliato un abbigliamento invernale adatto con indumenti impermeabili.</p>
+      <p>Le escursioni saranno garantite al raggiungimento delle 3 motoslitte, in caso contrario la prenotazione potrebbe subire variazioni. Le escursioni sono anche soggette a variazioni dovute alle condizioni meteorologiche.</p>
+    </div>
+
+    <div class="info-section">
+      <h3>Informazioni utili</h3>
+      <div class="info-item"><span class="dot">●</span>Orario di ritrovo: 30 minuti prima della partenza.</div>
+      <div class="info-item"><span class="dot">●</span>Le escursioni saranno confermate al raggiungimento di un minimo di 3 motoslitte; in caso contrario, la prenotazione potrebbe essere soggetta a modifiche.</div>
+      <div class="info-item"><span class="dot">●</span>Patente B obbligatoria per condurre la motoslitta.</div>
+      <div class="info-item"><span class="dot">●</span>Consigliato abbigliamento pesante da montagna/sci, guanti, berretto, occhiali da sole.</div>
+      <div class="info-item"><span class="dot">●</span>Il casco sarà fornito da noi, se non lo possiedi.</div>
+    </div>
+
+    <div class="divider">
+      <p>Ogni quota include una motoslitta, che può trasportare anche un passeggero. È possibile portare un bambino fino a 6 anni sulla stessa motoslitta.</p>
+    </div>
+
+    <div class="divider">
+      <h3 style="font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Politica di cancellazione</h3>
+      <p>In caso di maltempo o condizioni non idonee per la sicurezza dell'escursione, potremmo decidere di annullare o posticipare l'evento, anche il giorno stesso. In alternativa, sarà emesso un buono di pari valore valido per l'intera stagione invernale. Cancellazione gratuita entro le 48 ore dalla partenza. La direzione si riserva di apportare modifica al programma in caso di poca neve.</p>
+    </div>
+
+    <div class="cta-row">
+      <a href="#" class="btn-primary" onclick="event.preventDefault();BWOpen('sunset')">Prenota Ora</a>
+      <a href="gift-card.html" class="btn-ghost">Regala questa esperienza</a>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div><img src="images/homepage_img_0.png" alt="Snow Adventure" class="footer-logo"><p>Escursioni guidate in motoslitta nelle Alpi Orobie Bergamasche.</p></div>
+    <div><p class="label">Esperienze</p><a href="sunset.html" style="display:block">Orobic Sunset Tour</a><a href="night.html" style="display:block">Night Tour Adventure</a><a href="freeride.html" style="display:block">Private Freeride Ski Shuttle</a><a href="gift-card.html" style="display:block">Gift Card</a></div>
+    <div><p class="label">Contatti</p><p>Baita Belfud · SP2, 24010 Foppolo BG</p><a href="tel:+393397133695" style="display:block">Luca: +39 339 7133695</a><a href="mailto:Info@snowadventure.it" style="display:block">Info@snowadventure.it</a></div>
+  </div>
+  <div class="footer-bottom">&copy; 2025 Snow Adventure Foppolo. Powered by Metatour. | <a href="/legal/privacy.html" style="color:inherit">Privacy</a> · <a href="/legal/terms.html" style="color:inherit">Termini</a> · <a href="/legal/cookies.html" style="color:inherit">Cookie</a></div>
+</footer>
+<script>window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)})</script>
+<script src="/js/cms-adapter.js"></script>
+<script src="/js/booking-widget.js"></script>
+<script src="/js/cookie-consent.js"></script>
+</body>
+</html>
