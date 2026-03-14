@@ -10,3 +10,4 @@ preview_*.png
 *.db*
 .DS_Store
 .claude/
+.vercel

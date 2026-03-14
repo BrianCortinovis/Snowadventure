@@ -1,0 +1,14 @@
+html/
+api/
+src/
+admin/
+server.js
+dev-server.js
+node_modules/
+database/
+scraped/
+*.db*
+.claude/
+supabase-schema.sql
+package.json
+package-lock.json
