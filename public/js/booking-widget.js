@@ -162,7 +162,7 @@
         daySlots.map(s => {
           const isFull = s.availableSleds <= 0;
           const isSelected = state.selectedSlot && state.selectedSlot.id === s.id;
-          return `<div class="bw-time${isFull ? ' full' : ''}${isSelected ? ' selected' : ''}" onclick="${isFull ? '' : `BWSelectSlot(${s.id})`}">${s.time} (${s.availableSleds} disp.)</div>`;
+          return `<div class="bw-time${isFull ? ' full' : ''}${isSelected ? ' selected' : ''}" onclick="${isFull ? '' : `BWSelectSlot('${s.id}')`}">${s.time} (${s.availableSleds} disp.)</div>`;
         }).join('') + '</div>';
     }
 
