@@ -81,28 +81,17 @@
         const svc = serviceMap[expSlug];
         if (!svc) return mockResponse([]);
 
-        // Get all dates in the month
-        const [year, mon] = month.split('-').map(Number);
-        const daysInMonth = new Date(year, mon, 0).getDate();
-        const allSlots = [];
-
-        for (let d = 1; d <= daysInMonth; d++) {
-          const dateStr = `${year}-${String(mon).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-          try {
-            const daySlots = await cmsGet(`/booking/availability?service_id=${svc.id}&date=${dateStr}`);
-            for (const slot of daySlots) {
-              if (!slot.is_blocked) {
-                allSlots.push({
-                  id: slot.slot_id,
-                  date: slot.date,
-                  time: slot.start_time.substring(0, 5),
-                  availableSleds: slot.available_count,
-                  maxSleds: slot.max_bookings,
-                });
-              }
-            }
-          } catch { /* no slots for this date */ }
-        }
+        // Single API call for the entire month
+        const slots = await cmsGet(`/booking/availability?service_id=${svc.id}&month=${month}`);
+        const allSlots = (slots || [])
+          .filter(slot => !slot.is_blocked)
+          .map(slot => ({
+            id: slot.slot_id,
+            date: slot.date,
+            time: slot.start_time.substring(0, 5),
+            availableSleds: slot.available_count,
+            maxSleds: slot.max_bookings,
+          }));
 
         return mockResponse(allSlots);
       }
