@@ -106,10 +106,15 @@
           slug,
           name: svc.name,
           duration: `${svc.duration_minutes} min`,
+          price_cents: svc.price ? Math.round(svc.price * 100) : 0,
           priceCents: svc.price ? Math.round(svc.price * 100) : 0,
+          max_sleds: svc.max_capacity,
           maxSleds: svc.max_capacity,
           description: svc.description,
+          is_active: svc.is_active,
           isActive: svc.is_active,
+          photo_url: svc.image_url || null,
+          sort_order: svc.sort_order || 0,
         }));
         return mockResponse(exps);
       }
